@@ -614,7 +614,7 @@ GROUPS.forEach(g=>g.players.forEach(p=>{PM[p.name]=p;}));
 // ══════════════════════════════════════════
 function loadSt(){
   try{const s=localStorage.getItem('nhl_pool_v3');if(s)return JSON.parse(s);}catch(e){}
-  return{contestants:[],live:{},overrides:{},elim:[],lastSync:null,pin:'1234'};
+  return{contestants:[],live:{},overrides:{},elim:[],lastSync:null,pin:'1996'};
 }
 function saveSt(){localStorage.setItem('nhl_pool_v3',JSON.stringify(S));}
 let S=loadSt();
