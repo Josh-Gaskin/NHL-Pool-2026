@@ -7,1152 +7,718 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ice: #e8f4f8;
-    --rink: #0a1628;
-    --rink-mid: #0f2040;
-    --rink-light: #162a52;
-    --blue-line: #1a6bb5;
-    --red-line: #c8102e;
-    --gold: #ffb800;
-    --silver: #b0bec5;
-    --bronze: #a0522d;
-    --puck: #111111;
-    --text-main: #e8f4f8;
-    --text-dim: #e0ebf3;
-    --elim-bg: rgba(100,0,0,0.15);
-    --elim-text: #555;
-    --border: rgba(255,255,255,0.07);
+    --ice:#e8f4f8; --rink:#0a1628; --rink-mid:#0f2040; --rink-light:#162a52;
+    --blue-line:#1a6bb5; --red-line:#c8102e; --gold:#ffb800;
+    --silver:#b0bec5; --bronze:#a0522d;
+    --text-main:#e8f4f8; --text-dim:#7a9bb5; --border:rgba(255,255,255,0.07);
+    --elim-bg:rgba(100,0,0,0.15);
   }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--rink);color:var(--text-main);font-family:'Barlow',sans-serif;min-height:100vh;overflow-x:hidden;}
+  body::before{
+    content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(ellipse 120% 60% at 50% 0%,rgba(26,107,181,.15) 0%,transparent 60%),
+              radial-gradient(ellipse 80% 40% at 50% 100%,rgba(200,16,46,.08) 0%,transparent 50%),
+              repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,.02) 60px);
+  }
+  .container{max-width:1500px;margin:0 auto;padding:0 16px 60px;position:relative;z-index:1;}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* HEADER */
+  header{text-align:center;padding:36px 0 24px;}
+  header::after{content:'';display:block;height:3px;margin-top:22px;
+    background:linear-gradient(90deg,transparent,var(--red-line),var(--blue-line),var(--red-line),transparent);}
+  .hbadge{display:inline-block;border:1px solid var(--blue-line);border-radius:3px;padding:3px 12px;
+    font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;
+    color:var(--blue-line);margin-bottom:8px;}
+  h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,7vw,78px);letter-spacing:4px;line-height:.9;
+    text-shadow:0 0 60px rgba(26,107,181,.4);}
+  h1 span{color:var(--red-line);}
+  .hsub{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:5px;color:var(--text-dim);
+    text-transform:uppercase;margin-top:5px;}
 
-  body {
-    background: var(--rink);
-    color: var(--text-main);
-    font-family: 'Barlow', sans-serif;
-    font-weight: 400;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+  /* SYNC */
+  .sync-bar{display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0 0;
+    font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;color:var(--text-dim);}
+  .sdot{width:8px;height:8px;border-radius:50%;background:#555;transition:background .4s;}
+  .sdot.syncing{background:var(--gold);animation:pulse 1s infinite;}
+  .sdot.ok{background:#4caf50;} .sdot.err{background:var(--red-line);}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .sync-btn{background:transparent;border:1px solid var(--blue-line);color:var(--blue-line);
+    font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;
+    padding:3px 10px;border-radius:3px;cursor:pointer;transition:all .2s;}
+  .sync-btn:hover{background:var(--blue-line);color:white;}
 
-  /* ── RINK TEXTURE BACKGROUND ── */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 120% 60% at 50% 0%, rgba(26,107,181,0.15) 0%, transparent 60%),
-      radial-gradient(ellipse 80% 40% at 50% 100%, rgba(200,16,46,0.08) 0%, transparent 50%),
-      repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.02) 60px),
-      repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(255,255,255,0.01) 60px);
-    pointer-events: none;
-    z-index: 0;
-  }
+  /* TABS */
+  .tabs{display:flex;gap:3px;margin:26px 0 18px;border-bottom:1px solid var(--border);}
+  .tab{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;
+    padding:8px 16px;cursor:pointer;color:var(--text-dim);border:1px solid transparent;border-bottom:none;
+    border-radius:4px 4px 0 0;background:transparent;transition:all .2s;position:relative;bottom:-1px;}
+  .tab:hover{color:var(--text-main);}
+  .tab.active{color:var(--text-main);background:var(--rink-mid);border-color:var(--border);border-bottom-color:var(--rink-mid);}
+  .section{display:none;} .section.active{display:block;}
 
-  .container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 20px 60px;
-    position: relative;
-    z-index: 1;
-  }
+  /* SCORING REF */
+  .sref{display:flex;gap:20px;flex-wrap:wrap;background:var(--rink-mid);border:1px solid var(--border);
+    border-radius:6px;padding:9px 14px;margin-bottom:18px;
+    font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;color:var(--text-dim);}
+  .sref span{color:var(--text-main);font-weight:700;}
 
-  /* ── HEADER ── */
-  header {
-    text-align: center;
-    padding: 48px 0 32px;
-    position: relative;
-  }
-  header::after {
-    content: '';
-    display: block;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, var(--red-line), var(--blue-line), var(--red-line), transparent);
-    margin-top: 28px;
-  }
-  .header-badge {
-    display: inline-block;
-    border: 1px solid var(--blue-line);
-    border-radius: 3px;
-    padding: 3px 12px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--blue-line);
-    margin-bottom: 14px;
-  }
-  h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(42px, 8vw, 90px);
-    letter-spacing: 4px;
-    line-height: 0.9;
-    color: var(--text-main);
-    text-shadow: 0 0 60px rgba(26,107,181,0.4);
-  }
-  h1 span { color: var(--red-line); }
-  .header-sub {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 16px;
-    letter-spacing: 5px;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    margin-top: 8px;
-  }
+  /* STANDINGS */
+  .sh{display:grid;grid-template-columns:42px 1fr 66px 66px 66px 86px;gap:5px;
+    padding:6px 12px;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;
+    text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid var(--border);}
+  .sr{display:grid;grid-template-columns:42px 1fr 66px 66px 66px 86px;gap:5px;align-items:center;
+    padding:11px 12px;border-bottom:1px solid var(--border);transition:background .2s;border-radius:4px;}
+  .sr:hover{background:rgba(255,255,255,.03);}
+  .rb{font-family:'Bebas Neue',sans-serif;font-size:21px;text-align:center;}
+  .r1{color:var(--gold);} .r2{color:var(--silver);} .r3{color:var(--bronze);} .ro{color:var(--text-dim);font-size:16px;}
+  .cn{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;}
+  .sc{text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--text-dim);}
+  .tc{text-align:center;font-family:'Bebas Neue',sans-serif;font-size:25px;color:var(--gold);}
+  .pbw{grid-column:1/-1;height:2px;background:rgba(255,255,255,.05);border-radius:1px;margin:-7px 0 2px;overflow:hidden;}
+  .pb{height:100%;background:linear-gradient(90deg,var(--blue-line),var(--red-line));border-radius:1px;transition:width .8s ease;}
 
-  /* ── TABS ── */
-  .tabs {
-    display: flex;
-    gap: 4px;
-    margin: 32px 0 24px;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 0;
-  }
-  .tab {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 10px 22px;
-    cursor: pointer;
-    color: var(--text-dim);
-    border: 1px solid transparent;
-    border-bottom: none;
-    border-radius: 4px 4px 0 0;
-    background: transparent;
-    transition: all 0.2s;
-    position: relative;
-    bottom: -1px;
-  }
-  .tab:hover { color: var(--text-main); }
-  .tab.active {
-    color: var(--text-main);
-    background: var(--rink-mid);
-    border-color: var(--border);
-    border-bottom-color: var(--rink-mid);
-  }
+  /* PICKS TABLE */
+  .ptw{overflow-x:auto;}
+  table.pt{width:100%;border-collapse:collapse;table-layout:fixed;}
+  table.pt th{background:var(--rink-light);font-family:'Barlow Condensed',sans-serif;font-size:10px;
+    letter-spacing:1px;text-transform:uppercase;padding:6px 3px;border:1px solid var(--border);
+    color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  table.pt th.gh{color:var(--blue-line);}
+  table.pt th.cth{width:86px;} table.pt th.gth{width:calc((100% - 86px - 50px)/15);min-width:58px;} table.pt th.tth{width:50px;}
+  table.pt td{padding:3px 2px;border:1px solid var(--border);vertical-align:middle;overflow:hidden;}
+  table.pt td.cc{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.5px;
+    background:var(--rink-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:5px;}
+  table.pt td.tc2{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--gold);text-align:center;
+    background:var(--rink-mid);white-space:nowrap;}
+  .pc{display:flex;flex-direction:column;gap:1px;}
+  .pn{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text-main);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .pt2{font-size:8px;letter-spacing:1px;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;}
+  .pp{font-size:9px;color:var(--gold);font-family:'Barlow Condensed',sans-serif;font-weight:700;}
+  td.elim{background:var(--elim-bg)!important;}
+  td.elim .pn{color:#555;text-decoration:line-through;}
+  td.elim .pt2{color:#444;} td.elim .pp{color:#555;}
 
-  /* ── SECTION VISIBILITY ── */
-  .section { display: none; }
-  .section.active { display: block; }
+  /* PLAYER CARDS */
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:6px;margin-top:10px;}
+  .card{background:var(--rink-mid);border:1px solid var(--border);border-radius:6px;padding:9px 11px;transition:border-color .2s,transform .2s;}
+  .card:hover{border-color:var(--blue-line);transform:translateY(-1px);}
+  .card.elim2{opacity:.35;filter:grayscale(.9);border-color:rgba(100,0,0,.3);}
+  .ct{font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:2px;color:var(--red-line);margin-bottom:1px;}
+  .cna{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;margin-bottom:3px;}
+  .cst{display:flex;gap:7px;font-size:10px;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;}
+  .cst b{color:var(--text-main);}
+  .cpts{font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--gold);float:right;line-height:1;}
+  .gl{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;
+    color:var(--blue-line);margin:16px 0 4px;padding-bottom:4px;border-bottom:1px solid var(--border);}
 
-  /* ── SCOREBOARD / STANDINGS ── */
-  .standings-header {
-    display: grid;
-    grid-template-columns: 50px 1fr 80px 80px 80px 100px;
-    gap: 8px;
-    padding: 8px 16px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 16px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    border-bottom: 1px solid var(--border);
-  }
-  .standing-row {
-    display: grid;
-    grid-template-columns: 50px 1fr 80px 80px 80px 100px;
-    gap: 8px;
-    align-items: center;
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.2s;
-    border-radius: 4px;
-  }
-  .standing-row:hover { background: rgba(255,255,255,0.03); }
-  .rank-badge {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 24px;
-    text-align: center;
-  }
-  .rank-1 { color: var(--gold); }
-  .rank-2 { color: var(--silver); }
-  .rank-3 { color: var(--bronze); }
-  .rank-other { color: var(--text-dim); font-size: 18px; }
-  .contestant-name {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: 1px;
-  }
-  .stat-cell {
-    text-align: center;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 20px;
-    color: var(--text-dim);
-  }
-  .total-cell {
-    text-align: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    color: var(--gold);
-  }
-  .progress-bar-wrap {
-    grid-column: 1 / -1;
-    height: 2px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 1px;
-    margin: -10px 0 4px;
-    overflow: hidden;
-  }
-  .progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--blue-line), var(--red-line));
-    border-radius: 1px;
-    transition: width 0.8s ease;
-  }
+  /* ADMIN LOCK */
+  .als{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px;gap:14px;text-align:center;}
+  .als h2{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:3px;color:var(--text-dim);}
+  .als p{color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;}
+  .piw{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:6px;}
+  .pi{width:130px;background:var(--rink-mid);border:1px solid var(--border);border-radius:4px;
+    padding:9px 12px;color:var(--text-main);font-family:'Barlow',sans-serif;font-size:18px;
+    letter-spacing:6px;text-align:center;outline:none;transition:border-color .2s;}
+  .pi:focus{border-color:var(--blue-line);}
+  .pe{color:var(--red-line);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;}
 
-  /* ── SCORING REFERENCE BAR ── */
-  .scoring-ref {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-    background: var(--rink-mid);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 12px 20px;
-    margin-bottom: 24px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px;
-    letter-spacing: 1px;
-    color: var(--text-dim);
-  }
-  .scoring-ref span { color: var(--text-main); font-weight: 600; }
+  /* ADMIN PANEL */
+  .agrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media(max-width:768px){.agrid{grid-template-columns:1fr;}}
+  .ac{background:var(--rink-mid);border:1px solid var(--border);border-radius:8px;padding:16px;}
+  .ac h3{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;
+    color:var(--blue-line);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+  .fr{display:flex;flex-direction:column;gap:3px;margin-bottom:9px;}
+  .fr label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;}
+  .fr input,.fr select{background:var(--ice);border:1px solid var(--border);border-radius:4px;
+    padding:6px 9px;color:#0a1628;font-family:'Barlow',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color .2s;}
+  .fr input:focus,.fr select:focus{border-color:var(--blue-line);}
+  .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 16px;border-radius:4px;
+    font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;
+    cursor:pointer;border:1px solid;transition:all .2s;font-weight:700;}
+  .bp{background:var(--blue-line);border-color:var(--blue-line);color:white;}
+  .bp:hover{background:#1a85d5;}
+  .bd{background:transparent;border-color:var(--red-line);color:var(--red-line);}
+  .bd:hover{background:var(--red-line);color:white;}
+  .bsm{padding:3px 9px;font-size:9px;}
+  .cli{display:flex;flex-direction:column;gap:4px;margin-top:7px;}
+  .citem{display:flex;justify-content:space-between;align-items:center;padding:6px 9px;
+    background:rgba(255,255,255,.03);border-radius:4px;border:1px solid var(--border);}
+  .cin{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;}
+  .tel{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
+  .tc3{padding:3px 9px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:10px;
+    letter-spacing:1px;cursor:pointer;transition:all .2s;border:1px solid var(--border);
+    background:rgba(255,255,255,.05);color:var(--text-dim);}
+  .tc3.elim3{background:var(--red-line);border-color:var(--red-line);color:white;text-decoration:line-through;}
+  .peg{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:9px;margin-top:9px;}
+  .per{display:flex;flex-direction:column;gap:2px;}
+  .per label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;}
+  .per select{background:var(--ice);border:1px solid var(--border);border-radius:4px;
+    padding:5px 7px;color:#0a1628;font-family:'Barlow',sans-serif;font-size:11px;outline:none;cursor:pointer;}
+  .notice{background:rgba(26,107,181,.1);border:1px solid rgba(26,107,181,.3);border-radius:6px;
+    padding:9px 13px;font-size:11px;color:var(--text-dim);margin-bottom:14px;}
+  .notice strong{color:var(--blue-line);}
+  .lob{background:transparent;border:1px solid var(--text-dim);color:var(--text-dim);
+    font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;
+    padding:4px 10px;border-radius:3px;cursor:pointer;transition:all .2s;}
+  .lob:hover{border-color:var(--red-line);color:var(--red-line);}
 
-  /* ── POOL TABLE (PICKS GRID) ── */
-  .pool-table-wrap { overflow-x: auto; }
-  table.pool-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-    min-width: 900px;
-  }
-  table.pool-table th {
-    background: var(--rink-light);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 10px 8px;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    white-space: nowrap;
-  }
-  table.pool-table th.group-header {
-    color: var(--blue-line);
-    font-size: 12px;
-  }
-  table.pool-table td {
-    padding: 8px;
-    border: 1px solid var(--border);
-    vertical-align: middle;
-    white-space: nowrap;
-  }
-  table.pool-table td.contestant-col {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    background: var(--rink-mid);
-    position: sticky;
-    left: 0;
-    z-index: 2;
-    min-width: 120px;
-  }
-  table.pool-table td.total-col {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    color: var(--gold);
-    text-align: center;
-    background: var(--rink-mid);
-  }
-  .pick-cell {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .pick-name {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-main);
-  }
-  .pick-team {
-    font-size: 10px;
-    letter-spacing: 1px;
-    color: var(--text-dim);
-    font-family: 'Barlow Condensed', sans-serif;
-  }
-  .pick-pts {
-    font-size: 11px;
-    color: var(--gold);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 600;
-  }
-  td.eliminated {
-    background: var(--elim-bg) !important;
-  }
-  td.eliminated .pick-name {
-    color: #555;
-    text-decoration: line-through;
-  }
-  td.eliminated .pick-team { color: #444; }
-  td.eliminated .pick-pts { color: #555; }
+  /* TOAST */
+  .toast{position:fixed;bottom:22px;right:22px;background:var(--rink-light);border:1px solid var(--blue-line);
+    border-radius:6px;padding:9px 16px;font-family:'Barlow Condensed',sans-serif;font-size:12px;
+    letter-spacing:1px;color:var(--text-main);z-index:100;opacity:0;transform:translateY(7px);
+    transition:all .3s;pointer-events:none;}
+  .toast.show{opacity:1;transform:translateY(0);}
+  .empty{text-align:center;padding:45px 20px;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;
+    font-size:15px;letter-spacing:2px;text-transform:uppercase;}
 
-  /* ── PLAYER STATS TABLE ── */
-  .players-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 8px;
-    margin-top: 16px;
-  }
-  .player-card {
-    background: var(--rink-mid);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 12px 14px;
-    transition: border-color 0.2s, transform 0.2s;
-    cursor: default;
-  }
-  .player-card:hover { border-color: var(--blue-line); transform: translateY(-1px); }
-  .player-card.eliminated {
-    opacity: 0.4;
-    filter: grayscale(0.8);
-    border-color: rgba(100,0,0,0.3);
-  }
-  .player-card .pc-team {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--red-line);
-    margin-bottom: 2px;
-  }
-  .player-card .pc-name {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .player-card .pc-stats {
-    display: flex;
-    gap: 10px;
-    font-size: 12px;
-    color: var(--text-dim);
-    font-family: 'Barlow Condensed', sans-serif;
-  }
-  .player-card .pc-stats b { color: var(--text-main); }
-  .player-card .pc-pts-total {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    color: var(--gold);
-    float: right;
-    line-height: 1;
-  }
-  .group-label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--blue-line);
-    margin: 20px 0 6px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  /* ── ADMIN / EDIT PANEL ── */
-  .admin-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-  }
-  @media (max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } }
-  .admin-card {
-    background: var(--rink-mid);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
-  }
-  .admin-card h3 {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 14px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--blue-line);
-    margin-bottom: 16px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border);
-  }
-  .form-row {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 12px;
-  }
-  .form-row label {
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    font-family: 'Barlow Condensed', sans-serif;
-  }
-  .form-row input, .form-row select {
-    background: var(--rink);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 8px 12px;
-    color: var(--rink);
-    font-family: 'Barlow', sans-serif;
-    font-size: 13px;
-    outline: none;
-    color: #0a1628;
-    transition: border-color 0.2s;
-  }
-  .form-row input:focus, .form-row select:focus { border-color: var(--blue-line); }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 9px 20px;
-    border-radius: 4px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    cursor: pointer;
-    border: 1px solid;
-    transition: all 0.2s;
-    font-weight: 700;
-  }
-  .btn-primary {
-    background: var(--blue-line);
-    border-color: var(--blue-line);
-    color: white;
-  }
-  .btn-primary:hover { background: #1a85d5; border-color: #1a85d5; }
-  .btn-danger {
-    background: transparent;
-    border-color: var(--red-line);
-    color: var(--red-line);
-  }
-  .btn-danger:hover { background: var(--red-line); color: white; }
-  .btn-sm { padding: 5px 12px; font-size: 11px; }
-
-  .contestant-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
-  .contestant-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
-    background: rgba(255,255,255,0.03);
-    border-radius: 4px;
-    border: 1px solid var(--border);
-  }
-  .contestant-item-name { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 600; }
-  .contestant-item-actions { display: flex; gap: 6px; }
-
-  .team-elim-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-  .team-chip {
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 12px;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 1px solid var(--border);
-    background: rgba(255,255,255,0.05);
-    color: var(--text-dim);
-  }
-  .team-chip.eliminated {
-    background: var(--red-line);
-    border-color: var(--red-line);
-    color: white;
-    text-decoration: line-through;
-  }
-
-  .notice {
-    background: rgba(26,107,181,0.1);
-    border: 1px solid rgba(26,107,181,0.3);
-    border-radius: 6px;
-    padding: 12px 16px;
-    font-size: 13px;
-    color: var(--text-dim);
-    margin-bottom: 20px;
-  }
-  .notice strong { color: var(--blue-line); }
-
-  .picks-entry-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 12px;
-    margin-top: 12px;
-  }
-  .picks-entry-row {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .picks-entry-row label {
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    font-family: 'Barlow Condensed', sans-serif;
-  }
-  .picks-entry-row select {
-    background: var(--ice);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 8px 10px;
-    color: #0a1628;
-    font-family: 'Barlow', sans-serif;
-    font-size: 13px;
-    outline: none;
-    transition: border-color 0.2s;
-    cursor: pointer;
-  }
-  .picks-entry-row select:focus { border-color: var(--blue-line); }
-
-  .stats-update-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    align-items: end;
-    margin-top: 12px;
-  }
-  @media (max-width: 600px) { .stats-update-grid { grid-template-columns: 1fr 1fr; } }
-
-  .toast {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background: var(--rink-light);
-    border: 1px solid var(--blue-line);
-    border-radius: 6px;
-    padding: 12px 20px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 14px;
-    letter-spacing: 1px;
-    color: var(--text-main);
-    z-index: 100;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s;
-    pointer-events: none;
-  }
-  .toast.show { opacity: 1; transform: translateY(0); }
-
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-dim);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 18px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-
-  /* Scroll */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: var(--rink); }
-  ::-webkit-scrollbar-thumb { background: var(--rink-light); border-radius: 3px; }
+  ::-webkit-scrollbar{width:5px;height:5px;}
+  ::-webkit-scrollbar-track{background:var(--rink);}
+  ::-webkit-scrollbar-thumb{background:var(--rink-light);border-radius:3px;}
 </style>
 </head>
 <body>
 <div class="container">
 
-  <header>
-    <div class="header-badge">2025 – 26 Season</div>
-    <h1>NHL <span>Playoff</span><br>Pool</h1>
-    <div class="header-sub">Scoring Pool · Live Standings</div>
-  </header>
-
-  <!-- TABS -->
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('standings')">🏆 Standings</div>
-    <div class="tab" onclick="switchTab('picks')">📋 All Picks</div>
-    <div class="tab" onclick="switchTab('players')">🏒 Player Stats</div>
-    <div class="tab" onclick="switchTab('admin')">⚙️ Admin</div>
+<header>
+  <div class="hbadge">2025 – 26 Season</div>
+  <h1>NHL <span>Playoff</span> Pool</h1>
+  <div class="hsub">Live Stats · Auto-Updated</div>
+  <div class="sync-bar">
+    <div class="sdot" id="sdot"></div>
+    <span id="slabel">Initializing…</span>
+    <button class="sync-btn" onclick="syncNow()">↻ Sync Now</button>
   </div>
+</header>
 
-  <!-- ══════════════════════════════════════
-       STANDINGS TAB
-  ══════════════════════════════════════ -->
-  <div id="tab-standings" class="section active">
-    <div class="scoring-ref">
-      <div>Skaters: Goal <span>+3</span> · Assist <span>+2</span> · PIM <span>+0.5</span></div>
-      <div>Goalies: Win <span>+3</span> · Shutout <span>+3</span></div>
-      <div style="margin-left:auto; color: var(--text-dim); font-size:12px;" id="last-updated">Last updated: —</div>
+<div class="tabs">
+  <div class="tab active" onclick="sw('standings')">🏆 Standings</div>
+  <div class="tab" onclick="sw('picks')">📋 All Picks</div>
+  <div class="tab" onclick="sw('players')">🏒 Players</div>
+  <div class="tab" onclick="sw('admin')">⚙️ Admin</div>
+</div>
+
+<!-- STANDINGS -->
+<div id="tab-standings" class="section active">
+  <div class="sref">
+    <div>Skaters: Goal <span>+3</span> · Assist <span>+2</span> · PIM <span>+0.5</span></div>
+    <div>Goalies: Win <span>+3</span> · Shutout <span>+3</span></div>
+  </div>
+  <div class="sh"><div>#</div><div>Contestant</div><div style="text-align:center">G</div><div style="text-align:center">A</div><div style="text-align:center">PIM</div><div style="text-align:center">Pts</div></div>
+  <div id="slist"></div>
+</div>
+
+<!-- ALL PICKS -->
+<div id="tab-picks" class="section">
+  <div class="notice"><strong>Note:</strong> Struck-through picks belong to eliminated teams and can no longer score.</div>
+  <div class="ptw"><table class="pt"><thead id="pthead"></thead><tbody id="ptbody"></tbody></table></div>
+</div>
+
+<!-- PLAYERS -->
+<div id="tab-players" class="section">
+  <div class="notice"><strong>Live:</strong> Stats fetched from the NHL API (playoff totals). Use ↻ Sync to refresh.</div>
+  <div id="plist"></div>
+</div>
+
+<!-- ADMIN -->
+<div id="tab-admin" class="section">
+  <!-- Lock screen -->
+  <div class="als" id="als">
+    <h2>🔒 Admin Access</h2>
+    <p>Enter your PIN to manage the pool</p>
+    <div class="piw">
+      <input class="pi" type="password" id="piinput" maxlength="6" placeholder="••••" onkeydown="if(event.key==='Enter')checkPin()">
+      <button class="btn bp" onclick="checkPin()">Enter</button>
     </div>
-    <div class="standings-header">
-      <div>#</div>
-      <div>Contestant</div>
-      <div style="text-align:center">G</div>
-      <div style="text-align:center">A</div>
-      <div style="text-align:center">PIM</div>
-      <div style="text-align:center">Total Pts</div>
-    </div>
-    <div id="standings-list"></div>
-  </div>
-
-  <!-- ══════════════════════════════════════
-       ALL PICKS TAB
-  ══════════════════════════════════════ -->
-  <div id="tab-picks" class="section">
-    <div class="notice"><strong>Note:</strong> Greyed-out / struck-through players belong to eliminated teams and cannot score further points.</div>
-    <div class="pool-table-wrap">
-      <table class="pool-table" id="picks-table">
-        <thead id="picks-thead"></thead>
-        <tbody id="picks-tbody"></tbody>
-      </table>
+    <div class="pe" id="pe"></div>
+    <div style="margin-top:18px;font-family:'Barlow Condensed';font-size:11px;color:var(--text-dim);letter-spacing:1px;">
+      Default PIN: <strong style="color:var(--gold)">1234</strong> — change it once unlocked
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════
-       PLAYER STATS TAB
-  ══════════════════════════════════════ -->
-  <div id="tab-players" class="section">
-    <div class="notice"><strong>Tip:</strong> Update player stats in the Admin tab. Eliminated teams are shown greyed out.</div>
-    <div id="players-list"></div>
-  </div>
+  <!-- Admin panel -->
+  <div id="apanel" style="display:none">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:10px;gap:8px;align-items:center;">
+      <span style="font-family:'Barlow Condensed';font-size:11px;color:var(--text-dim);letter-spacing:1px;">Admin unlocked</span>
+      <button class="lob" onclick="lockAdmin()">🔒 Lock</button>
+    </div>
+    <div class="agrid">
 
-  <!-- ══════════════════════════════════════
-       ADMIN TAB
-  ══════════════════════════════════════ -->
-  <div id="tab-admin" class="section">
-    <div class="admin-grid">
-
-      <!-- ADD CONTESTANT -->
-      <div class="admin-card">
+      <!-- Add Contestant -->
+      <div class="ac">
         <h3>Add Contestant</h3>
-        <div class="form-row">
-          <label>Name</label>
-          <input type="text" id="new-contestant-name" placeholder="e.g. John Smith">
-        </div>
-        <button class="btn btn-primary" onclick="addContestant()">+ Add Contestant</button>
-        <div style="margin-top:16px">
-          <div style="font-family:'Barlow Condensed';font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">Current Contestants</div>
-          <div class="contestant-list" id="contestant-list"></div>
-        </div>
+        <div class="fr"><label>Name</label><input type="text" id="ncname" placeholder="e.g. John Smith"></div>
+        <button class="btn bp" onclick="addC()">+ Add</button>
+        <div style="margin-top:12px;font-family:'Barlow Condensed';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;">Contestants</div>
+        <div class="cli" id="cli"></div>
       </div>
 
-      <!-- ELIMINATED TEAMS -->
-      <div class="admin-card">
+      <!-- Eliminated Teams -->
+      <div class="ac">
         <h3>Eliminated Teams</h3>
-        <div style="font-size:13px;color:var(--text-dim);margin-bottom:12px;">Click a team to toggle elimination. Eliminated = red.</div>
-        <div class="team-elim-list" id="team-elim-list"></div>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;">Click to toggle. Red = eliminated.</div>
+        <div class="tel" id="tel"></div>
       </div>
 
-      <!-- ASSIGN PICKS -->
-      <div class="admin-card" style="grid-column: 1 / -1;" id="picks-entry-card">
+      <!-- Change PIN -->
+      <div class="ac">
+        <h3>Change Admin PIN</h3>
+        <div class="fr"><label>Current PIN</label><input type="password" id="opin" placeholder="Current PIN"></div>
+        <div class="fr"><label>New PIN (4–6 digits)</label><input type="password" id="npin" placeholder="New PIN"></div>
+        <button class="btn bp" onclick="changePin()">Update PIN</button>
+      </div>
+
+      <!-- Manual Stats Override -->
+      <div class="ac">
+        <h3>Manual Stats Override</h3>
+        <div class="notice" style="margin-bottom:8px;font-size:10px;"><strong>Note:</strong> Overrides take priority over live API data. Clear to revert.</div>
+        <div class="fr"><label>Player</label>
+          <select id="spsel" onchange="prefillStats()"><option value="">— choose player —</option></select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;">
+          <div class="fr"><label id="sl1">Goals/Wins</label><input type="number" id="ss1" min="0" placeholder="0"></div>
+          <div class="fr"><label id="sl2">Assists/SO</label><input type="number" id="ss2" min="0" placeholder="0"></div>
+          <div class="fr"><label id="sl3">PIM</label><input type="number" id="ss3" min="0" placeholder="0"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button class="btn bp" onclick="manualStats()">Save</button>
+          <button class="btn bd bsm" onclick="clearOvr()">Clear Override</button>
+        </div>
+      </div>
+
+      <!-- Assign Picks -->
+      <div class="ac" style="grid-column:1/-1">
         <h3>Assign Picks</h3>
-        <div class="form-row">
-          <label>Select Contestant</label>
-          <select id="pick-contestant-select" onchange="renderPicksEntry()">
-            <option value="">— choose contestant —</option>
-          </select>
+        <div class="fr"><label>Contestant</label>
+          <select id="pcsel" onchange="renderPE()"><option value="">— choose contestant —</option></select>
         </div>
-        <div id="picks-entry-area"></div>
-        <div style="margin-top:16px;">
-          <button class="btn btn-primary" onclick="savePicks()">Save Picks</button>
-        </div>
-      </div>
-
-      <!-- UPDATE PLAYER STATS -->
-      <div class="admin-card" style="grid-column: 1 / -1;">
-        <h3>Update Player Stats</h3>
-        <div class="notice" style="margin-bottom:12px;"><strong>Note:</strong> Enter cumulative season totals for each player.</div>
-        <div class="form-row">
-          <label>Select Player</label>
-          <select id="stat-player-select">
-            <option value="">— choose player —</option>
-          </select>
-        </div>
-        <div class="stats-update-grid">
-          <div class="form-row">
-            <label id="stat1-label">Goals</label>
-            <input type="number" id="stat1" min="0" placeholder="0">
-          </div>
-          <div class="form-row">
-            <label id="stat2-label">Assists</label>
-            <input type="number" id="stat2" min="0" placeholder="0">
-          </div>
-          <div class="form-row">
-            <label id="stat3-label">PIM</label>
-            <input type="number" id="stat3" min="0" placeholder="0">
-          </div>
-        </div>
-        <div style="margin-top:12px;">
-          <button class="btn btn-primary" onclick="updateStats()">Update Stats</button>
-        </div>
+        <div id="pea"></div>
+        <div style="margin-top:12px;"><button class="btn bp" onclick="savePicks()">Save Picks</button></div>
       </div>
 
     </div>
   </div>
 </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════════════
-//  DATA
-// ══════════════════════════════════════════════════════
-
-const GROUPS = [
-  { id: 1, players: [
-    { name: "Nikita Kucherov",    team: "TBL", type: "skater" },
-    { name: "Connor McDavid",     team: "EDM", type: "skater" },
-    { name: "Nathan MacKinnon",   team: "COL", type: "skater" },
-    { name: "Leon Draisaitl",     team: "EDM", type: "skater" },
+// ══════════════════════════════════════════
+//  POOL DATA
+// ══════════════════════════════════════════
+const GROUPS=[
+  {id:1,players:[
+    {name:"Nikita Kucherov",team:"TBL",type:"skater",id:8476453},
+    {name:"Connor McDavid",team:"EDM",type:"skater",id:8478402},
+    {name:"Nathan MacKinnon",team:"COL",type:"skater",id:8477492},
+    {name:"Leon Draisaitl",team:"EDM",type:"skater",id:8477934},
   ]},
-  { id: 2, players: [
-    { name: "David Pastrnak",     team: "BOS", type: "skater" },
-    { name: "Martin Necas",       team: "COL", type: "skater" },
-    { name: "Mikko Rantanen",     team: "DAL", type: "skater" },
-    { name: "Jack Eichel",        team: "VGK", type: "skater" },
+  {id:2,players:[
+    {name:"David Pastrnak",team:"BOS",type:"skater",id:8477956},
+    {name:"Martin Necas",team:"COL",type:"skater",id:8480762},
+    {name:"Mikko Rantanen",team:"DAL",type:"skater",id:8478420},
+    {name:"Jack Eichel",team:"VGK",type:"skater",id:8478403},
   ]},
-  { id: 3, players: [
-    { name: "Nick Suzuki",        team: "MTL", type: "skater" },
-    { name: "Mark Stone",         team: "VGK", type: "skater" },
-    { name: "Jason Robertson",    team: "DAL", type: "skater" },
-    { name: "Kirill Kaprizov",    team: "MIN", type: "skater" },
+  {id:3,players:[
+    {name:"Nick Suzuki",team:"MTL",type:"skater",id:8480800},
+    {name:"Mark Stone",team:"VGK",type:"skater",id:8475913},
+    {name:"Jason Robertson",team:"DAL",type:"skater",id:8481528},
+    {name:"Kirill Kaprizov",team:"MIN",type:"skater",id:8481600},
   ]},
-  { id: 4, players: [
-    { name: "Matt Boldy",         team: "MIN", type: "skater" },
-    { name: "Sidney Crosby",      team: "PIT", type: "skater" },
-    { name: "Cole Caufield",      team: "MTL", type: "skater" },
-    { name: "Jake Guentzel",      team: "TBL", type: "skater" },
+  {id:4,players:[
+    {name:"Matt Boldy",team:"MIN",type:"skater",id:8482109},
+    {name:"Sidney Crosby",team:"PIT",type:"skater",id:8471675},
+    {name:"Cole Caufield",team:"MTL",type:"skater",id:8481540},
+    {name:"Jake Guentzel",team:"TBL",type:"skater",id:8477404},
   ]},
-  { id: 5, players: [
-    { name: "Brandon Hagel",      team: "TBL", type: "skater" },
-    { name: "Evgeni Malkin",      team: "PIT", type: "skater" },
-    { name: "Clayton Keller",     team: "UTA", type: "skater" },
-    { name: "Wyatt Johnston",     team: "DAL", type: "skater" },
+  {id:5,players:[
+    {name:"Brandon Hagel",team:"TBL",type:"skater",id:8480801},
+    {name:"Evgeni Malkin",team:"PIT",type:"skater",id:8471215},
+    {name:"Clayton Keller",team:"UTA",type:"skater",id:8479343},
+    {name:"Wyatt Johnston",team:"DAL",type:"skater",id:8483515},
   ]},
-  { id: 6, players: [
-    { name: "Tage Thompson",      team: "BUF", type: "skater" },
-    { name: "Sebastian Aho",      team: "CAR", type: "skater" },
-    { name: "Brady Tkachuk",      team: "OTT", type: "skater" },
-    { name: "Mitch Marner",       team: "VGK", type: "skater" },
+  {id:6,players:[
+    {name:"Tage Thompson",team:"BUF",type:"skater",id:8480993},
+    {name:"Sebastian Aho",team:"CAR",type:"skater",id:8478427},
+    {name:"Brady Tkachuk",team:"OTT",type:"skater",id:8481528},
+    {name:"Mitch Marner",team:"VGK",type:"skater",id:8478483},
   ]},
-  { id: 7, players: [
-    { name: "Tim Stützle",        team: "OTT", type: "skater" },
-    { name: "Artemi Panarin",     team: "LAK", type: "skater" },
-    { name: "Leo Carlsson",       team: "ANA", type: "skater" },
-    { name: "Travis Konecny",     team: "PHI", type: "skater" },
+  {id:7,players:[
+    {name:"Tim Stützle",team:"OTT",type:"skater",id:8482116},
+    {name:"Artemi Panarin",team:"LAK",type:"skater",id:8478550},
+    {name:"Leo Carlsson",team:"ANA",type:"skater",id:8484144},
+    {name:"Travis Konecny",team:"PHI",type:"skater",id:8479365},
   ]},
-  { id: 8, players: [
-    { name: "Dylan Guenther",     team: "UTA", type: "skater" },
-    { name: "Andrei Svechnikov",  team: "CAR", type: "skater" },
-    { name: "Zach Hyman",         team: "EDM", type: "skater" },
-    { name: "Cutter Gauthier",    team: "ANA", type: "skater" },
+  {id:8,players:[
+    {name:"Dylan Guenther",team:"UTA",type:"skater",id:8483453},
+    {name:"Andrei Svechnikov",team:"CAR",type:"skater",id:8480830},
+    {name:"Zach Hyman",team:"EDM",type:"skater",id:8475786},
+    {name:"Cutter Gauthier",team:"ANA",type:"skater",id:8484882},
   ]},
-  { id: 9, players: [
-    { name: "Juraj Slafkovský",   team: "MTL", type: "skater" },
-    { name: "Adrian Kempe",       team: "LAK", type: "skater" },
-    { name: "Seth Jarvis",        team: "CAR", type: "skater" },
-    { name: "Alex Tuch",          team: "BUF", type: "skater" },
+  {id:9,players:[
+    {name:"Juraj Slafkovský",team:"MTL",type:"skater",id:8484145},
+    {name:"Adrian Kempe",team:"LAK",type:"skater",id:8477960},
+    {name:"Seth Jarvis",team:"CAR",type:"skater",id:8482655},
+    {name:"Alex Tuch",team:"BUF",type:"skater",id:8478450},
   ]},
-  { id: 10, players: [
-    { name: "Porter Martone",     team: "PHI", type: "skater" },
-    { name: "Nick Schmaltz",      team: "UTA", type: "skater" },
-    { name: "Drake Batherson",    team: "OTT", type: "skater" },
-    { name: "Morgan Geekie",      team: "BOS", type: "skater" },
+  {id:10,players:[
+    {name:"Porter Martone",team:"PHI",type:"skater",id:8487950},
+    {name:"Nick Schmaltz",team:"UTA",type:"skater",id:8478057},
+    {name:"Drake Batherson",team:"OTT",type:"skater",id:8481533},
+    {name:"Morgan Geekie",team:"BOS",type:"skater",id:8478476},
   ]},
-  { id: 11, players: [
-    { name: "Cale Makar",         team: "COL", type: "skater" },
-    { name: "Evan Bouchard",      team: "EDM", type: "skater" },
-    { name: "Quinn Hughes",       team: "MIN", type: "skater" },
-    { name: "Rasmus Dahlin",      team: "BUF", type: "skater" },
+  {id:11,players:[
+    {name:"Cale Makar",team:"COL",type:"skater",id:8480069},
+    {name:"Evan Bouchard",team:"EDM",type:"skater",id:8480144},
+    {name:"Quinn Hughes",team:"VAN",type:"skater",id:8480800},
+    {name:"Rasmus Dahlin",team:"BUF",type:"skater",id:8480769},
   ]},
-  { id: 12, players: [
-    { name: "Lane Hutson",        team: "MTL", type: "skater" },
-    { name: "Darren Raddysh",     team: "TBL", type: "skater" },
-    { name: "Shayne Gostisbehere",team: "CAR", type: "skater" },
-    { name: "Erik Karlsson",      team: "PIT", type: "skater" },
+  {id:12,players:[
+    {name:"Lane Hutson",team:"MTL",type:"skater",id:8487947},
+    {name:"Darren Raddysh",team:"TBL",type:"skater",id:8478438},
+    {name:"Shayne Gostisbehere",team:"CAR",type:"skater",id:8477494},
+    {name:"Erik Karlsson",team:"PIT",type:"skater",id:8474578},
   ]},
-  { id: 13, players: [
-    { name: "Charlie McAvoy",     team: "BOS", type: "skater" },
-    { name: "John Carlson",       team: "ANA", type: "skater" },
-    { name: "Jake Sanderson",     team: "OTT", type: "skater" },
-    { name: "Miro Heiskanen",     team: "DAL", type: "skater" },
+  {id:13,players:[
+    {name:"Charlie McAvoy",team:"BOS",type:"skater",id:8479325},
+    {name:"John Carlson",team:"ANA",type:"skater",id:8474270},
+    {name:"Jake Sanderson",team:"OTT",type:"skater",id:8483411},
+    {name:"Miro Heiskanen",team:"DAL",type:"skater",id:8481522},
   ]},
-  { id: 14, players: [
-    { name: "Scott Wedgewood",    team: "COL", type: "goalie" },
-    { name: "Jake Oettinger",     team: "DAL", type: "goalie" },
-    { name: "Andrei Vasilevskiy", team: "TBL", type: "goalie" },
-    { name: "Ukko-Pekka Luukkonen",team:"BUF", type: "goalie" },
+  {id:14,players:[
+    {name:"Scott Wedgewood",team:"COL",type:"goalie",id:8476419},
+    {name:"Jake Oettinger",team:"DAL",type:"goalie",id:8480382},
+    {name:"Andrei Vasilevskiy",team:"TBL",type:"goalie",id:8476883},
+    {name:"Ukko-Pekka Luukkonen",team:"BUF",type:"goalie",id:8481533},
   ]},
-  { id: 15, players: [
-    { name: "Karel Vejmelka",     team: "UTA", type: "goalie" },
-    { name: "Carter Hart",        team: "VGK", type: "goalie" },
-    { name: "Linus Ullmark",      team: "OTT", type: "goalie" },
-    { name: "Stuart Skinner",     team: "PIT", type: "goalie" },
+  {id:15,players:[
+    {name:"Karel Vejmelka",team:"UTA",type:"goalie",id:8480353},
+    {name:"Carter Hart",team:"VGK",type:"goalie",id:8479361},
+    {name:"Linus Ullmark",team:"OTT",type:"goalie",id:8476945},
+    {name:"Stuart Skinner",team:"PIT",type:"goalie",id:8480407},
   ]},
 ];
 
-const ALL_TEAMS = [...new Set(GROUPS.flatMap(g => g.players.map(p => p.team)))].sort();
+const ALL_TEAMS=[...new Set(GROUPS.flatMap(g=>g.players.map(p=>p.team)))].sort();
+const PM={};
+GROUPS.forEach(g=>g.players.forEach(p=>{PM[p.name]=p;}));
 
-// All players flat (unique key = name)
-function allPlayers() {
-  const players = {};
-  GROUPS.forEach(g => g.players.forEach(p => {
-    players[p.name] = { ...p, goals: 0, assists: 0, pim: 0, wins: 0, shutouts: 0 };
-  }));
-  return players;
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+function loadSt(){
+  try{const s=localStorage.getItem('nhl_pool_v3');if(s)return JSON.parse(s);}catch(e){}
+  return{contestants:[],live:{},overrides:{},elim:[],lastSync:null,pin:'1234'};
+}
+function saveSt(){localStorage.setItem('nhl_pool_v3',JSON.stringify(S));}
+let S=loadSt();
+let unlocked=false;
+
+// ══════════════════════════════════════════
+//  NHL API
+// ══════════════════════════════════════════
+const SEASON='20252026', GT=3;
+
+async function proxyFetch(url){
+  const r=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+  const j=await r.json();
+  return JSON.parse(j.contents);
 }
 
-// ══════════════════════════════════════════════════════
-//  STATE  (localStorage)
-// ══════════════════════════════════════════════════════
+async function syncNow(){
+  setSync('syncing','Fetching NHL API…');
+  try{
+    const [sk,gl]=await Promise.all([
+      proxyFetch(`https://api.nhle.com/stats/rest/en/skater/summary?limit=500&sort=points&cayenneExp=seasonId=${SEASON}%20and%20gameTypeId=${GT}`),
+      proxyFetch(`https://api.nhle.com/stats/rest/en/goalie/summary?limit=200&sort=wins&cayenneExp=seasonId=${SEASON}%20and%20gameTypeId=${GT}`),
+    ]);
 
-function loadState() {
-  try {
-    const s = localStorage.getItem('nhl_pool_state');
-    if (s) return JSON.parse(s);
-  } catch(e) {}
-  return {
-    contestants: [],    // [{ name, picks: { groupId: playerName } }]
-    playerStats: {},    // { playerName: { goals, assists, pim, wins, shutouts } }
-    eliminatedTeams: [],
-    lastUpdated: null
-  };
+    // Try PIM endpoint separately
+    let pimMap={};
+    try{
+      const pd=await proxyFetch(`https://api.nhle.com/stats/rest/en/skater/penaltyShots?limit=500&sort=penaltyMinutes&cayenneExp=seasonId=${SEASON}%20and%20gameTypeId=${GT}`);
+      if(pd&&pd.data) pd.data.forEach(p=>{pimMap[norm(p.skaterFullName||'')]=p.penaltyMinutes||0;});
+    }catch(e){}
+
+    const ns={};
+    if(sk&&sk.data) sk.data.forEach(p=>{
+      const m=matchPlayer(p.skaterFullName||'','skater');
+      if(m) ns[m.name]={goals:p.goals||0,assists:p.assists||0,pim:pimMap[norm(p.skaterFullName||'')]??p.penaltyMinutes??0,wins:0,shutouts:0};
+    });
+    if(gl&&gl.data) gl.data.forEach(p=>{
+      const m=matchPlayer(p.goalieFullName||'','goalie');
+      if(m) ns[m.name]={wins:p.wins||0,shutouts:p.shutouts||0,goals:0,assists:0,pim:0};
+    });
+
+    S.live=ns;
+    S.lastSync=new Date().toLocaleTimeString();
+    saveSt(); renderAll();
+    setSync('ok',`Synced · ${S.lastSync}`);
+    toast('Stats updated ✓');
+  }catch(err){
+    console.warn('Sync error:',err);
+    setSync('err','Sync failed — using cached data');
+    toast('API sync failed. Cached data shown.');
+  }
 }
 
-function saveState() {
-  localStorage.setItem('nhl_pool_state', JSON.stringify(state));
-  state.lastUpdated = new Date().toLocaleString();
-  document.getElementById('last-updated').textContent = 'Last updated: ' + state.lastUpdated;
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function matchPlayer(apiName,type){
+  const a=norm(apiName);
+  for(const p of Object.values(PM)){
+    if(p.type!==type) continue;
+    if(norm(p.name)===a) return p;
+    // first-initial + last-name match
+    const ap=a.split(' '), pp=norm(p.name).split(' ');
+    if(ap[ap.length-1]===pp[pp.length-1]&&ap[0][0]===pp[0][0]) return p;
+  }
+  return null;
 }
 
-let state = loadState();
+function setSync(st,label){
+  document.getElementById('sdot').className='sdot '+st;
+  document.getElementById('slabel').textContent=label;
+}
 
-// ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════
 //  SCORING
-// ══════════════════════════════════════════════════════
-
-function getPlayerStats(name) {
-  const base = allPlayers()[name] || {};
-  return Object.assign({ goals:0, assists:0, pim:0, wins:0, shutouts:0 }, state.playerStats[name] || {});
+// ══════════════════════════════════════════
+function gps(name){return S.overrides[name]||S.live[name]||{goals:0,assists:0,pim:0,wins:0,shutouts:0};}
+function gpp(name){
+  const p=gps(name),info=PM[name];
+  if(!info)return 0;
+  return info.type==='goalie'?(p.wins||0)*3+(p.shutouts||0)*3:(p.goals||0)*3+(p.assists||0)*2+(p.pim||0)*.5;
 }
-
-function calcPlayerPoints(name) {
-  const p = getPlayerStats(name);
-  const info = allPlayers()[name];
-  if (!info) return 0;
-  if (info.type === 'goalie') return p.wins * 3 + p.shutouts * 3;
-  return p.goals * 3 + p.assists * 2 + p.pim * 0.5;
-}
-
-function calcContestantStats(contestant) {
-  let goals = 0, assists = 0, pim = 0, total = 0;
-  Object.values(contestant.picks || {}).forEach(playerName => {
-    if (!playerName) return;
-    const ps = getPlayerStats(playerName);
-    const info = allPlayers()[playerName];
-    if (!info) return;
-    if (info.type === 'skater') {
-      goals += ps.goals || 0;
-      assists += ps.assists || 0;
-      pim += ps.pim || 0;
-    }
-    total += calcPlayerPoints(playerName);
+function gcs(c){
+  let g=0,a=0,pim=0,tot=0;
+  Object.values(c.picks||{}).forEach(n=>{
+    if(!n)return;
+    const ps=gps(n),info=PM[n];
+    if(!info)return;
+    if(info.type==='skater'){g+=ps.goals||0;a+=ps.assists||0;pim+=ps.pim||0;}
+    tot+=gpp(n);
   });
-  return { goals, assists, pim, total };
+  return{goals:g,assists:a,pim,total:tot};
+}
+function isElim(t){return S.elim.includes(t);}
+
+// ══════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════
+function renderAll(){
+  renderStandings();renderPicks();renderPlayers();renderAdminLists();
 }
 
-function isEliminated(teamCode) {
-  return state.eliminatedTeams.includes(teamCode);
-}
-
-// ══════════════════════════════════════════════════════
-//  RENDERS
-// ══════════════════════════════════════════════════════
-
-function renderAll() {
-  renderStandings();
-  renderPicks();
-  renderPlayers();
-  renderAdmin();
-  document.getElementById('last-updated').textContent =
-    state.lastUpdated ? 'Last updated: ' + state.lastUpdated : 'Last updated: —';
-}
-
-/* ── STANDINGS ── */
-function renderStandings() {
-  const list = document.getElementById('standings-list');
-  if (!state.contestants.length) {
-    list.innerHTML = '<div class="empty-state">No contestants yet — add them in the Admin tab</div>';
-    return;
-  }
-  const ranked = state.contestants.map(c => ({ ...c, stats: calcContestantStats(c) }))
-    .sort((a,b) => b.stats.total - a.stats.total);
-  const maxPts = ranked[0]?.stats.total || 1;
-  list.innerHTML = ranked.map((c, i) => {
-    const rank = i + 1;
-    const badgeClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
-    const pct = maxPts > 0 ? Math.round((c.stats.total / maxPts) * 100) : 0;
-    return `
-      <div class="standing-row">
-        <div class="rank-badge ${badgeClass}">${rank}</div>
-        <div class="contestant-name">${c.name}</div>
-        <div class="stat-cell">${c.stats.goals}</div>
-        <div class="stat-cell">${c.stats.assists}</div>
-        <div class="stat-cell">${c.stats.pim}</div>
-        <div class="total-cell">${c.stats.total.toFixed(1)}</div>
-        <div class="progress-bar-wrap">
-          <div class="progress-bar" style="width:${pct}%"></div>
-        </div>
-      </div>`;
+function renderStandings(){
+  const el=document.getElementById('slist');
+  if(!S.contestants.length){el.innerHTML='<div class="empty">No contestants yet — add in Admin</div>';return;}
+  const ranked=S.contestants.map(c=>({...c,st:gcs(c)})).sort((a,b)=>b.st.total-a.st.total);
+  const mx=ranked[0]?.st.total||1;
+  el.innerHTML=ranked.map((c,i)=>{
+    const r=i+1,bc=r===1?'r1':r===2?'r2':r===3?'r3':'ro',pct=mx>0?Math.round(c.st.total/mx*100):0;
+    return`<div class="sr">
+      <div class="rb ${bc}">${r}</div>
+      <div class="cn">${c.name}</div>
+      <div class="sc">${c.st.goals}</div>
+      <div class="sc">${c.st.assists}</div>
+      <div class="sc">${c.st.pim}</div>
+      <div class="tc">${c.st.total.toFixed(1)}</div>
+      <div class="pbw"><div class="pb" style="width:${pct}%"></div></div>
+    </div>`;
   }).join('');
 }
 
-/* ── PICKS TABLE ── */
-function renderPicks() {
-  const thead = document.getElementById('picks-thead');
-  const tbody = document.getElementById('picks-tbody');
-  const gIds = GROUPS.map(g => g.id);
-
-  thead.innerHTML = `<tr>
-    <th>Contestant</th>
-    ${gIds.map(id => `<th class="group-header">Grp ${id}</th>`).join('')}
-    <th>Total</th>
-  </tr>`;
-
-  if (!state.contestants.length) {
-    tbody.innerHTML = `<tr><td colspan="${gIds.length + 2}" style="text-align:center;padding:40px;color:var(--text-dim);font-family:'Barlow Condensed';letter-spacing:2px;text-transform:uppercase;">No contestants yet</td></tr>`;
+function renderPicks(){
+  const th=document.getElementById('pthead'),tb=document.getElementById('ptbody');
+  const gids=GROUPS.map(g=>g.id);
+  th.innerHTML=`<tr><th class="cth">Name</th>${gids.map(id=>`<th class="gth gh">G${id}</th>`).join('')}<th class="tth">Pts</th></tr>`;
+  if(!S.contestants.length){
+    tb.innerHTML=`<tr><td colspan="${gids.length+2}" style="text-align:center;padding:28px;color:var(--text-dim);font-family:'Barlow Condensed';letter-spacing:2px;">No contestants yet</td></tr>`;
     return;
   }
-
-  const ranked = [...state.contestants].sort((a,b) =>
-    calcContestantStats(b).total - calcContestantStats(a).total);
-
-  tbody.innerHTML = ranked.map(c => {
-    const totalPts = calcContestantStats(c).total;
-    const cells = gIds.map(gid => {
-      const pName = (c.picks || {})[gid];
-      if (!pName) return `<td><span style="color:var(--text-dim);font-size:11px;font-family:'Barlow Condensed';">—</span></td>`;
-      const info = allPlayers()[pName] || {};
-      const pts = calcPlayerPoints(pName);
-      const elim = isEliminated(info.team);
-      return `<td class="${elim ? 'eliminated' : ''}">
-        <div class="pick-cell">
-          <div class="pick-name">${pName}</div>
-          <div class="pick-team">${info.team || ''}</div>
-          <div class="pick-pts">${pts > 0 ? pts.toFixed(1)+' pts' : ''}</div>
-        </div>
-      </td>`;
+  const ranked=[...S.contestants].sort((a,b)=>gcs(b).total-gcs(a).total);
+  tb.innerHTML=ranked.map(c=>{
+    const tot=gcs(c).total;
+    const cells=gids.map(gid=>{
+      const n=(c.picks||{})[gid];
+      if(!n)return`<td><div class="pc"><div class="pn" style="color:var(--text-dim)">—</div></div></td>`;
+      const info=PM[n]||{},pts=gpp(n),el=isElim(info.team);
+      return`<td class="${el?'elim':''}"><div class="pc">
+        <div class="pn">${sn(n)}</div>
+        <div class="pt2">${info.team||''}</div>
+        <div class="pp">${pts>0?pts.toFixed(1):''}</div>
+      </div></td>`;
     }).join('');
-    return `<tr>
-      <td class="contestant-col">${c.name}</td>
-      ${cells}
-      <td class="total-col">${totalPts.toFixed(1)}</td>
-    </tr>`;
+    return`<tr><td class="cc">${c.name}</td>${cells}<td class="tc2">${tot.toFixed(1)}</td></tr>`;
   }).join('');
 }
 
-/* ── PLAYERS ── */
-function renderPlayers() {
-  const container = document.getElementById('players-list');
-  let html = '';
-  GROUPS.forEach(g => {
-    html += `<div class="group-label">Group ${g.id}</div><div class="players-grid">`;
-    g.players.forEach(p => {
-      const ps = getPlayerStats(p.name);
-      const pts = calcPlayerPoints(p.name);
-      const elim = isEliminated(p.team);
-      const statsHtml = p.type === 'goalie'
-        ? `<span>W: <b>${ps.wins}</b></span><span>SO: <b>${ps.shutouts}</b></span>`
-        : `<span>G: <b>${ps.goals}</b></span><span>A: <b>${ps.assists}</b></span><span>PIM: <b>${ps.pim}</b></span>`;
-      html += `<div class="player-card ${elim ? 'eliminated' : ''}">
-        <div class="pc-team">${p.team}${elim ? ' · ELIM' : ''}</div>
-        <div>
-          <span class="pc-pts-total">${pts.toFixed(1)}</span>
-          <div class="pc-name">${p.name}</div>
-        </div>
-        <div class="pc-stats">${statsHtml}</div>
+function sn(name){const p=name.split(' ');return p.length<2?name:p[0][0]+'. '+p.slice(1).join(' ');}
+
+function renderPlayers(){
+  const el=document.getElementById('plist');
+  let h='';
+  GROUPS.forEach(g=>{
+    h+=`<div class="gl">Group ${g.id}</div><div class="pgrid">`;
+    g.players.forEach(p=>{
+      const ps=gps(p.name),pts=gpp(p.name),el2=isElim(p.team),ovr=!!S.overrides[p.name];
+      const st=p.type==='goalie'
+        ?`<span>W: <b>${ps.wins}</b></span><span>SO: <b>${ps.shutouts}</b></span>`
+        :`<span>G: <b>${ps.goals}</b></span><span>A: <b>${ps.assists}</b></span><span>PIM: <b>${ps.pim}</b></span>`;
+      h+=`<div class="card ${el2?'elim2':''}">
+        <div class="ct">${p.team}${el2?' ELIM':''}${ovr?' OVR':''}</div>
+        <div><span class="cpts">${pts.toFixed(1)}</span><div class="cna">${p.name}</div></div>
+        <div class="cst">${st}</div>
       </div>`;
     });
-    html += '</div>';
+    h+='</div>';
   });
-  container.innerHTML = html;
+  el.innerHTML=h;
 }
 
-/* ── ADMIN ── */
-function renderAdmin() {
+function renderAdminLists(){
+  if(!unlocked)return;
   // Contestant list
-  const cl = document.getElementById('contestant-list');
-  cl.innerHTML = state.contestants.length
-    ? state.contestants.map(c => `
-        <div class="contestant-item">
-          <span class="contestant-item-name">${c.name}</span>
-          <div class="contestant-item-actions">
-            <button class="btn btn-danger btn-sm" onclick="removeContestant('${c.name.replace(/'/g,"\\'")}')">Remove</button>
-          </div>
-        </div>`).join('')
-    : '<div style="color:var(--text-dim);font-size:13px;font-family:\'Barlow Condensed\'">No contestants yet.</div>';
-
-  // Contestant select for picks
-  const cs = document.getElementById('pick-contestant-select');
-  const prev = cs.value;
-  cs.innerHTML = '<option value="">— choose contestant —</option>' +
-    state.contestants.map(c => `<option value="${c.name}"${c.name===prev?' selected':''}>${c.name}</option>`).join('');
-
-  // Stats player select
-  const sp = document.getElementById('stat-player-select');
-  const prevP = sp.value;
-  const byGroup = GROUPS.map(g =>
-    `<optgroup label="Group ${g.id}">${g.players.map(p =>
-      `<option value="${p.name}"${p.name===prevP?' selected':''}>${p.name} (${p.team}) ${p.type==='goalie'?'🥅':''}</option>`
-    ).join('')}</optgroup>`
-  ).join('');
-  sp.innerHTML = '<option value="">— choose player —</option>' + byGroup;
-  sp.onchange = () => updateStatLabels();
-  updateStatLabels();
-
-  // Eliminated teams
-  const tel = document.getElementById('team-elim-list');
-  tel.innerHTML = ALL_TEAMS.map(t =>
-    `<div class="team-chip ${isEliminated(t) ? 'eliminated' : ''}" onclick="toggleTeam('${t}')">${t}</div>`
-  ).join('');
+  const cl=document.getElementById('cli');
+  cl.innerHTML=S.contestants.length
+    ?S.contestants.map(c=>`<div class="citem"><span class="cin">${c.name}</span><button class="btn bd bsm" onclick="removeC('${c.name.replace(/'/g,"\\'")}')">Remove</button></div>`).join('')
+    :'<div style="color:var(--text-dim);font-size:11px;font-family:\'Barlow Condensed\'">No contestants.</div>';
+  // Picks select
+  const cs=document.getElementById('pcsel');const pv=cs.value;
+  cs.innerHTML='<option value="">— choose contestant —</option>'+S.contestants.map(c=>`<option value="${c.name}"${c.name===pv?' selected':''}>${c.name}</option>`).join('');
+  // Stats select
+  const sp=document.getElementById('spsel');const spv=sp.value;
+  sp.innerHTML='<option value="">— choose player —</option>'+GROUPS.map(g=>`<optgroup label="Group ${g.id}">${g.players.map(p=>`<option value="${p.name}"${p.name===spv?' selected':''}>${p.name} (${p.team})${p.type==='goalie'?' 🥅':''}</option>`).join('')}</optgroup>`).join('');
+  // Teams
+  document.getElementById('tel').innerHTML=ALL_TEAMS.map(t=>`<div class="tc3 ${isElim(t)?'elim3':''}" onclick="toggleTeam('${t}')">${t}</div>`).join('');
 }
 
-function updateStatLabels() {
-  const name = document.getElementById('stat-player-select').value;
-  const info = name ? allPlayers()[name] : null;
-  if (info && info.type === 'goalie') {
-    document.getElementById('stat1-label').textContent = 'Wins';
-    document.getElementById('stat2-label').textContent = 'Shutouts';
-    document.getElementById('stat3-label').textContent = '(N/A)';
-    document.getElementById('stat3').disabled = true;
-  } else {
-    document.getElementById('stat1-label').textContent = 'Goals';
-    document.getElementById('stat2-label').textContent = 'Assists';
-    document.getElementById('stat3-label').textContent = 'PIM';
-    document.getElementById('stat3').disabled = false;
-  }
-  // Pre-fill current stats
-  if (info) {
-    const ps = getPlayerStats(name);
-    if (info.type === 'goalie') {
-      document.getElementById('stat1').value = ps.wins || 0;
-      document.getElementById('stat2').value = ps.shutouts || 0;
-      document.getElementById('stat3').value = '';
-    } else {
-      document.getElementById('stat1').value = ps.goals || 0;
-      document.getElementById('stat2').value = ps.assists || 0;
-      document.getElementById('stat3').value = ps.pim || 0;
-    }
+// ══════════════════════════════════════════
+//  ADMIN LOCK
+// ══════════════════════════════════════════
+function checkPin(){
+  const v=document.getElementById('piinput').value;
+  if(v===S.pin){
+    unlocked=true;
+    document.getElementById('als').style.display='none';
+    document.getElementById('apanel').style.display='block';
+    document.getElementById('pe').textContent='';
+    document.getElementById('piinput').value='';
+    renderAdminLists();
+  }else{
+    document.getElementById('pe').textContent='Incorrect PIN. Try again.';
+    document.getElementById('piinput').value='';
   }
 }
-
-function renderPicksEntry() {
-  const area = document.getElementById('picks-entry-area');
-  const cName = document.getElementById('pick-contestant-select').value;
-  if (!cName) { area.innerHTML = ''; return; }
-  const c = state.contestants.find(x => x.name === cName);
-  const picks = (c && c.picks) || {};
-  area.innerHTML = '<div class="picks-entry-grid">' +
-    GROUPS.map(g => {
-      const sel = picks[g.id] || '';
-      return `<div class="picks-entry-row">
-        <label>Group ${g.id}</label>
-        <select id="pick-g${g.id}">
-          <option value="">— pick —</option>
-          ${g.players.map(p => `<option value="${p.name}"${p.name===sel?' selected':''}>${p.name} (${p.team})</option>`).join('')}
-        </select>
-      </div>`;
-    }).join('') + '</div>';
+function lockAdmin(){
+  unlocked=false;
+  document.getElementById('als').style.display='flex';
+  document.getElementById('apanel').style.display='none';
+  toast('Admin locked.');
+}
+function changePin(){
+  const o=document.getElementById('opin').value,n=document.getElementById('npin').value;
+  if(o!==S.pin)return toast('Current PIN incorrect.');
+  if(!/^\d{4,6}$/.test(n))return toast('New PIN must be 4-6 digits.');
+  S.pin=n;saveSt();
+  document.getElementById('opin').value='';document.getElementById('npin').value='';
+  toast('PIN updated!');
 }
 
-// ══════════════════════════════════════════════════════
-//  ACTIONS
-// ══════════════════════════════════════════════════════
-
-function addContestant() {
-  const name = document.getElementById('new-contestant-name').value.trim();
-  if (!name) return showToast('Enter a name!');
-  if (state.contestants.find(c => c.name === name)) return showToast('Already exists!');
-  state.contestants.push({ name, picks: {} });
-  document.getElementById('new-contestant-name').value = '';
-  saveState();
-  renderAll();
-  showToast(`${name} added!`);
+// ══════════════════════════════════════════
+//  ADMIN ACTIONS
+// ══════════════════════════════════════════
+function addC(){
+  const n=document.getElementById('ncname').value.trim();
+  if(!n)return toast('Enter a name!');
+  if(S.contestants.find(c=>c.name===n))return toast('Already exists!');
+  S.contestants.push({name:n,picks:{}});
+  document.getElementById('ncname').value='';
+  saveSt();renderAll();toast(`${n} added!`);
 }
-
-function removeContestant(name) {
-  state.contestants = state.contestants.filter(c => c.name !== name);
-  saveState();
-  renderAll();
-  showToast(`${name} removed.`);
+function removeC(name){
+  S.contestants=S.contestants.filter(c=>c.name!==name);
+  saveSt();renderAll();toast(`${name} removed.`);
 }
-
-function savePicks() {
-  const cName = document.getElementById('pick-contestant-select').value;
-  if (!cName) return showToast('Select a contestant first.');
-  const c = state.contestants.find(x => x.name === cName);
-  if (!c) return;
-  c.picks = {};
-  GROUPS.forEach(g => {
-    const sel = document.getElementById(`pick-g${g.id}`)?.value;
-    if (sel) c.picks[g.id] = sel;
-  });
-  saveState();
-  renderAll();
-  showToast(`Picks saved for ${cName}!`);
+function savePicks(){
+  const cn=document.getElementById('pcsel').value;
+  if(!cn)return toast('Select a contestant.');
+  const c=S.contestants.find(x=>x.name===cn);if(!c)return;
+  c.picks={};
+  GROUPS.forEach(g=>{const s=document.getElementById(`pg${g.id}`)?.value;if(s)c.picks[g.id]=s;});
+  saveSt();renderAll();toast(`Picks saved for ${cn}!`);
 }
-
-function updateStats() {
-  const name = document.getElementById('stat-player-select').value;
-  if (!name) return showToast('Select a player first.');
-  const info = allPlayers()[name];
-  if (!info) return;
-  const s1 = parseFloat(document.getElementById('stat1').value) || 0;
-  const s2 = parseFloat(document.getElementById('stat2').value) || 0;
-  const s3 = parseFloat(document.getElementById('stat3').value) || 0;
-  if (info.type === 'goalie') {
-    state.playerStats[name] = { wins: s1, shutouts: s2, goals:0, assists:0, pim:0 };
-  } else {
-    state.playerStats[name] = { goals: s1, assists: s2, pim: s3, wins:0, shutouts:0 };
+function renderPE(){
+  const area=document.getElementById('pea');
+  const cn=document.getElementById('pcsel').value;
+  if(!cn){area.innerHTML='';return;}
+  const c=S.contestants.find(x=>x.name===cn),picks=(c&&c.picks)||{};
+  area.innerHTML='<div class="peg">'+GROUPS.map(g=>{
+    const sel=picks[g.id]||'';
+    return`<div class="per"><label>Group ${g.id}</label><select id="pg${g.id}">
+      <option value="">— pick —</option>
+      ${g.players.map(p=>`<option value="${p.name}"${p.name===sel?' selected':''}>${p.name} (${p.team})</option>`).join('')}
+    </select></div>`;
+  }).join('')+'</div>';
+}
+function toggleTeam(t){
+  const i=S.elim.indexOf(t);if(i===-1)S.elim.push(t);else S.elim.splice(i,1);
+  saveSt();renderAll();toast(`${t} ${i===-1?'eliminated':'restored'}.`);
+}
+function prefillStats(){
+  const n=document.getElementById('spsel').value,info=n?PM[n]:null,ps=n?gps(n):null;
+  if(info&&info.type==='goalie'){
+    document.getElementById('sl1').textContent='Wins';
+    document.getElementById('sl2').textContent='Shutouts';
+    document.getElementById('sl3').textContent='(N/A)';
+    document.getElementById('ss3').disabled=true;
+    if(ps){document.getElementById('ss1').value=ps.wins||0;document.getElementById('ss2').value=ps.shutouts||0;document.getElementById('ss3').value='';}
+  }else{
+    document.getElementById('sl1').textContent='Goals';
+    document.getElementById('sl2').textContent='Assists';
+    document.getElementById('sl3').textContent='PIM';
+    document.getElementById('ss3').disabled=false;
+    if(ps){document.getElementById('ss1').value=ps.goals||0;document.getElementById('ss2').value=ps.assists||0;document.getElementById('ss3').value=ps.pim||0;}
   }
-  saveState();
-  renderAll();
-  showToast(`Stats updated for ${name}!`);
+}
+function manualStats(){
+  const n=document.getElementById('spsel').value;if(!n)return toast('Select a player.');
+  const info=PM[n],s1=parseFloat(document.getElementById('ss1').value)||0,s2=parseFloat(document.getElementById('ss2').value)||0,s3=parseFloat(document.getElementById('ss3').value)||0;
+  S.overrides[n]=info.type==='goalie'?{wins:s1,shutouts:s2,goals:0,assists:0,pim:0}:{goals:s1,assists:s2,pim:s3,wins:0,shutouts:0};
+  saveSt();renderAll();toast(`Override saved for ${n}.`);
+}
+function clearOvr(){
+  const n=document.getElementById('spsel').value;if(!n)return toast('Select a player.');
+  delete S.overrides[n];saveSt();renderAll();toast(`Override cleared — using live data.`);
 }
 
-function toggleTeam(team) {
-  const idx = state.eliminatedTeams.indexOf(team);
-  if (idx === -1) state.eliminatedTeams.push(team);
-  else state.eliminatedTeams.splice(idx, 1);
-  saveState();
-  renderAll();
-  showToast(`${team} ${idx === -1 ? 'eliminated' : 'back in playoffs'}.`);
+// ══════════════════════════════════════════
+//  UI
+// ══════════════════════════════════════════
+function sw(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  const tabs=['standings','picks','players','admin'];
+  document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+let toastT;
+function toast(msg){
+  clearTimeout(toastT);
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  toastT=setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-// ══════════════════════════════════════════════════════
-//  UI HELPERS
-// ══════════════════════════════════════════════════════
-
-function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  const tabs = ['standings','picks','players','admin'];
-  const idx = tabs.indexOf(name);
-  document.querySelectorAll('.tab')[idx].classList.add('active');
-  document.getElementById(`tab-${name}`).classList.add('active');
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
-
-// ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════
 //  INIT
-// ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════
 renderAll();
+if(S.lastSync) setSync('ok',`Last sync · ${S.lastSync}`);
+syncNow();
+setInterval(syncNow, 15*60*1000); // refresh every 15 min
 </script>
 </body>
 </html>
