@@ -6,117 +6,58 @@
 <title>NHL Playoff Pool 2025–26</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════
-   VARIABLES & RESET
-═══════════════════════════════════ */
-:root {
-  --ice:#e8f4f8; --rink:#0a1628; --rink-mid:#0f2040; --rink-light:#162a52;
-  --blue-line:#2a82d4; --red-line:#e0192e; --gold:#ffb800;
-  --silver:#c8d6e0; --bronze:#b8702a;
-  --text-main:#f0f8ff; --text-dim:#a8c8e0; --border:rgba(255,255,255,0.12);
-  --elim-bg:rgba(100,0,0,0.18);
-}
+:root{--ice:#e8f4f8;--rink:#0a1628;--rink-mid:#0f2040;--rink-light:#162a52;--blue-line:#2a82d4;--red-line:#e0192e;--gold:#ffb800;--silver:#c8d6e0;--bronze:#b8702a;--text-main:#f0f8ff;--text-dim:#a8c8e0;--border:rgba(255,255,255,0.12);--elim-bg:rgba(100,0,0,0.18);}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--rink);color:var(--text-main);font-family:'Barlow',sans-serif;min-height:100vh;overflow-x:hidden;}
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:
-    radial-gradient(ellipse 120% 60% at 50% 0%,rgba(26,107,181,.15) 0%,transparent 60%),
-    radial-gradient(ellipse 80% 40% at 50% 100%,rgba(200,16,46,.08) 0%,transparent 50%),
-    repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,.02) 60px);
-}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 120% 60% at 50% 0%,rgba(26,107,181,.15) 0%,transparent 60%),radial-gradient(ellipse 80% 40% at 50% 100%,rgba(200,16,46,.08) 0%,transparent 50%),repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,.02) 60px);}
 .container{max-width:1500px;margin:0 auto;padding:0 16px 80px;position:relative;z-index:1;}
-
-/* ═══════════════════════════════════
-   HEADER
-═══════════════════════════════════ */
 header{text-align:center;padding:36px 0 22px;}
-header::after{content:'';display:block;height:3px;margin-top:20px;
-  background:linear-gradient(90deg,transparent,var(--red-line),var(--blue-line),var(--red-line),transparent);}
-.hbadge{display:inline-block;border:1px solid var(--blue-line);border-radius:3px;padding:3px 12px;
-  font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;
-  color:var(--blue-line);margin-bottom:8px;}
-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,7vw,78px);letter-spacing:4px;line-height:.9;
-  text-shadow:0 0 60px rgba(26,107,181,.4);}
+header::after{content:'';display:block;height:3px;margin-top:20px;background:linear-gradient(90deg,transparent,var(--red-line),var(--blue-line),var(--red-line),transparent);}
+.hbadge{display:inline-block;border:1px solid var(--blue-line);border-radius:3px;padding:3px 12px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--blue-line);margin-bottom:8px;}
+h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,7vw,78px);letter-spacing:4px;line-height:.9;text-shadow:0 0 60px rgba(26,107,181,.4);}
 h1 span{color:var(--red-line);}
-.hsub{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:5px;color:var(--text-dim);
-  text-transform:uppercase;margin-top:5px;}
-
-/* SYNC BAR */
-.sync-bar{display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0 0;
-  font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:1px;color:var(--text-dim);}
+.hsub{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:5px;color:var(--text-dim);text-transform:uppercase;margin-top:5px;}
+.sync-bar{display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0 0;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:1px;color:var(--text-dim);}
 .sdot{width:9px;height:9px;border-radius:50%;background:#555;transition:background .4s;}
 .sdot.syncing{background:var(--gold);animation:pulse 1s infinite;}
-.sdot.ok{background:#4caf50;} .sdot.err{background:var(--red-line);}
+.sdot.ok{background:#4caf50;}.sdot.err{background:var(--red-line);}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
-.sync-btn{background:transparent;border:1px solid var(--blue-line);color:var(--blue-line);
-  font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;
-  padding:4px 12px;border-radius:3px;cursor:pointer;transition:all .2s;}
+.sync-btn{background:transparent;border:1px solid var(--blue-line);color:var(--blue-line);font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:3px;cursor:pointer;transition:all .2s;}
 .sync-btn:hover{background:var(--blue-line);color:white;}
-
-/* ═══════════════════════════════════
-   TABS  — desktop horizontal, mobile bottom-bar
-═══════════════════════════════════ */
 .tabs{display:flex;gap:3px;margin:26px 0 18px;border-bottom:1px solid var(--border);}
-.tab{font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;
-  padding:9px 18px;cursor:pointer;color:var(--text-dim);border:1px solid transparent;border-bottom:none;
-  border-radius:4px 4px 0 0;background:transparent;transition:all .2s;position:relative;bottom:-1px;
-  user-select:none;-webkit-tap-highlight-color:transparent;}
+.tab{font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;padding:9px 18px;cursor:pointer;color:var(--text-dim);border:1px solid transparent;border-bottom:none;border-radius:4px 4px 0 0;background:transparent;transition:all .2s;position:relative;bottom:-1px;user-select:none;-webkit-tap-highlight-color:transparent;}
 .tab:hover{color:var(--text-main);}
 .tab.active{color:var(--text-main);background:var(--rink-mid);border-color:var(--border);border-bottom-color:var(--rink-mid);}
-.section{display:none;} .section.active{display:block;}
-
-/* SCORING REF */
-.sref{display:flex;gap:20px;flex-wrap:wrap;background:var(--rink-mid);border:1px solid var(--border);
-  border-radius:6px;padding:11px 16px;margin-bottom:18px;
-  font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:1px;color:var(--text-dim);}
+.tab-icon{display:none;}
+.section{display:none;}.section.active{display:block;}
+.sref{display:flex;gap:20px;flex-wrap:wrap;background:var(--rink-mid);border:1px solid var(--border);border-radius:6px;padding:11px 16px;margin-bottom:18px;font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:1px;color:var(--text-dim);}
 .sref span{color:var(--text-main);font-weight:700;}
-
-/* ═══════════════════════════════════
-   STANDINGS — desktop grid
-═══════════════════════════════════ */
-.sh{display:grid;grid-template-columns:46px 1fr 58px 58px 62px 58px 58px 90px;gap:4px;
-  padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;
-  text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid var(--border);}
-.sr{display:grid;grid-template-columns:46px 1fr 58px 58px 62px 58px 58px 90px;gap:4px;align-items:center;
-  padding:13px 14px;border-bottom:1px solid var(--border);transition:background .2s;border-radius:4px;}
+.sh{display:grid;grid-template-columns:46px 1fr 58px 58px 62px 58px 58px 90px;gap:4px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid var(--border);}
+.sr{display:grid;grid-template-columns:46px 1fr 58px 58px 62px 58px 58px 90px;gap:4px;align-items:center;padding:13px 14px;border-bottom:1px solid var(--border);transition:background .2s;border-radius:4px;}
 .sr:hover{background:rgba(255,255,255,.04);}
 .rb{font-family:'Bebas Neue',sans-serif;font-size:24px;text-align:center;}
-.r1{color:var(--gold);} .r2{color:var(--silver);} .r3{color:var(--bronze);} .ro{color:var(--text-dim);font-size:18px;}
+.r1{color:var(--gold);}.r2{color:var(--silver);}.r3{color:var(--bronze);}.ro{color:var(--text-dim);font-size:18px;}
 .cn{font-family:'Barlow Condensed',sans-serif;font-size:21px;font-weight:700;letter-spacing:1px;}
 .sc{text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:17px;color:var(--text-dim);}
 .sc-g{text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:17px;color:#7ec8e3;}
 .tc{text-align:center;font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);}
 .pbw{grid-column:1/-1;height:2px;background:rgba(255,255,255,.06);border-radius:1px;margin:-8px 0 2px;overflow:hidden;}
 .pb{height:100%;background:linear-gradient(90deg,var(--blue-line),var(--red-line));border-radius:1px;transition:width .8s ease;}
-
-/* ═══════════════════════════════════
-   PICKS TABLE — desktop
-═══════════════════════════════════ */
 .ptw{overflow-x:auto;}
 table.pt{width:100%;border-collapse:collapse;table-layout:fixed;}
-table.pt th{background:var(--rink-light);font-family:'Barlow Condensed',sans-serif;font-size:12px;
-  letter-spacing:1px;text-transform:uppercase;padding:8px 3px;border:1px solid var(--border);
-  color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+table.pt th{background:var(--rink-light);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:8px 3px;border:1px solid var(--border);color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 table.pt th.gh{color:#7ec8e3;}
-table.pt th.cth{width:96px;} table.pt th.gth{width:calc((100% - 96px - 54px)/15);min-width:62px;} table.pt th.tth{width:54px;}
+table.pt th.cth{width:96px;}table.pt th.gth{width:calc((100% - 96px - 54px)/15);min-width:62px;}table.pt th.tth{width:54px;}
 table.pt td{padding:4px 3px;border:1px solid var(--border);vertical-align:middle;overflow:hidden;}
-table.pt td.cc{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.5px;
-  background:var(--rink-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:6px;color:var(--text-main);}
-table.pt td.tc2{font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--gold);text-align:center;
-  background:var(--rink-mid);white-space:nowrap;}
+table.pt td.cc{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.5px;background:var(--rink-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:6px;color:var(--text-main);}
+table.pt td.tc2{font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--gold);text-align:center;background:var(--rink-mid);white-space:nowrap;}
 .pc{display:flex;flex-direction:column;gap:1px;}
-.pn{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:var(--text-main);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pn{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .pt2{font-size:10px;letter-spacing:1px;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;}
 .pp{font-size:11px;color:var(--gold);font-family:'Barlow Condensed',sans-serif;font-weight:700;}
 td.elim{background:var(--elim-bg)!important;}
 td.elim .pn{color:#666;text-decoration:line-through;}
-td.elim .pt2{color:#555;} td.elim .pp{color:#666;}
-
-/* ═══════════════════════════════════
-   PLAYER CARDS — desktop
-═══════════════════════════════════ */
+td.elim .pt2{color:#555;}td.elim .pp{color:#666;}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;margin-top:12px;}
 .card{background:var(--rink-mid);border:1px solid var(--border);border-radius:6px;padding:11px 13px;transition:border-color .2s,transform .2s;}
 .card:hover{border-color:var(--blue-line);transform:translateY(-1px);}
@@ -126,184 +67,78 @@ td.elim .pt2{color:#555;} td.elim .pp{color:#666;}
 .cst{display:flex;gap:9px;font-size:13px;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;}
 .cst b{color:var(--text-main);}
 .cpts{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold);float:right;line-height:1;}
-.gl{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;
-  color:#7ec8e3;margin:18px 0 5px;padding-bottom:4px;border-bottom:1px solid var(--border);}
-
-/* ═══════════════════════════════════
-   ADMIN
-═══════════════════════════════════ */
+.gl{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#7ec8e3;margin:18px 0 5px;padding-bottom:4px;border-bottom:1px solid var(--border);}
 .als{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px;gap:14px;text-align:center;}
 .als h2{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:3px;color:var(--text-dim);}
 .als p{color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:1px;}
 .piw{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:6px;}
-.pi{width:130px;background:var(--rink-mid);border:1px solid var(--border);border-radius:4px;
-  padding:9px 12px;color:var(--text-main);font-family:'Barlow',sans-serif;font-size:20px;
-  letter-spacing:6px;text-align:center;outline:none;transition:border-color .2s;}
+.pi{width:130px;background:var(--rink-mid);border:1px solid var(--border);border-radius:4px;padding:9px 12px;color:var(--text-main);font-family:'Barlow',sans-serif;font-size:20px;letter-spacing:6px;text-align:center;outline:none;transition:border-color .2s;}
 .pi:focus{border-color:var(--blue-line);}
 .pe{color:#ff6b7a;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:1px;}
 .agrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 .ac{background:var(--rink-mid);border:1px solid var(--border);border-radius:8px;padding:18px;}
-.ac h3{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:3px;text-transform:uppercase;
-  color:#7ec8e3;margin-bottom:13px;padding-bottom:7px;border-bottom:1px solid var(--border);}
+.ac h3{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:#7ec8e3;margin-bottom:13px;padding-bottom:7px;border-bottom:1px solid var(--border);}
 .fr{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
 .fr label{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;}
-.fr input,.fr select{background:var(--ice);border:1px solid var(--border);border-radius:4px;
-  padding:7px 10px;color:#0a1628;font-family:'Barlow',sans-serif;font-size:14px;outline:none;width:100%;transition:border-color .2s;}
+.fr input,.fr select{background:var(--ice);border:1px solid var(--border);border-radius:4px;padding:7px 10px;color:#0a1628;font-family:'Barlow',sans-serif;font-size:14px;outline:none;width:100%;transition:border-color .2s;}
 .fr input:focus,.fr select:focus{border-color:var(--blue-line);}
-.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 18px;border-radius:4px;
-  font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;
-  cursor:pointer;border:1px solid;transition:all .2s;font-weight:700;}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 18px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:1px solid;transition:all .2s;font-weight:700;}
 .bp{background:var(--blue-line);border-color:var(--blue-line);color:white;}
 .bp:hover{background:#4a9ae0;}
 .bd{background:transparent;border-color:var(--red-line);color:#ff8090;}
 .bd:hover{background:var(--red-line);color:white;}
 .bsm{padding:4px 10px;font-size:11px;}
-.cli{display:flex;flex-direction:column;gap:5px;margin-top:8px;}
-.citem{display:flex;justify-content:space-between;align-items:center;padding:8px 11px;
-  background:rgba(255,255,255,.04);border-radius:4px;border:1px solid var(--border);}
-.cin{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--text-main);}
-.tel{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
-.tc3{padding:4px 11px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:12px;
-  letter-spacing:1px;cursor:pointer;transition:all .2s;border:1px solid var(--border);
-  background:rgba(255,255,255,.06);color:var(--text-dim);}
-.tc3:hover{color:var(--text-main);border-color:var(--text-dim);}
-.tc3.elim3{background:var(--red-line);border-color:var(--red-line);color:white;text-decoration:line-through;}
-.peg{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;margin-top:10px;}
-.per{display:flex;flex-direction:column;gap:3px;}
-.per label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;}
-.per select{background:var(--ice);border:1px solid var(--border);border-radius:4px;
-  padding:6px 8px;color:#0a1628;font-family:'Barlow',sans-serif;font-size:12px;outline:none;cursor:pointer;}
-.notice{background:rgba(26,107,181,.12);border:1px solid rgba(26,107,181,.35);border-radius:6px;
-  padding:10px 14px;font-size:13px;color:var(--text-dim);margin-bottom:14px;}
+.notice{background:rgba(26,107,181,.12);border:1px solid rgba(26,107,181,.35);border-radius:6px;padding:10px 14px;font-size:13px;color:var(--text-dim);margin-bottom:14px;}
 .notice strong{color:#7ec8e3;}
-.lob{background:transparent;border:1px solid var(--text-dim);color:var(--text-dim);
-  font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;
-  padding:4px 11px;border-radius:3px;cursor:pointer;transition:all .2s;}
+.lob{background:transparent;border:1px solid var(--text-dim);color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:4px 11px;border-radius:3px;cursor:pointer;transition:all .2s;}
 .lob:hover{border-color:var(--red-line);color:#ff8090;}
-
-/* TOAST */
-.toast{position:fixed;bottom:22px;right:22px;background:var(--rink-light);border:1px solid var(--blue-line);
-  border-radius:6px;padding:10px 18px;font-family:'Barlow Condensed',sans-serif;font-size:15px;
-  letter-spacing:1px;color:var(--text-main);z-index:200;opacity:0;transform:translateY(7px);
-  transition:all .3s;pointer-events:none;}
+.tel{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.tc3{padding:4px 11px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text-dim);}
+.tc3.elim3{background:var(--red-line);border-color:var(--red-line);color:white;text-decoration:line-through;}
+.spgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--rink-light);border:1px solid var(--blue-line);border-radius:6px;padding:10px 18px;font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:1px;color:var(--text-main);z-index:200;opacity:0;transform:translateY(7px);transition:all .3s;pointer-events:none;}
 .toast.show{opacity:1;transform:translateY(0);}
-.empty{text-align:center;padding:45px 20px;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;
-  font-size:17px;letter-spacing:2px;text-transform:uppercase;}
-
+.empty{text-align:center;padding:45px 20px;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;font-size:17px;letter-spacing:2px;text-transform:uppercase;}
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:var(--rink);}
 ::-webkit-scrollbar-thumb{background:var(--rink-light);border-radius:3px;}
 
-/* ═══════════════════════════════════════════════════════
-   MOBILE STYLES  ≤ 768 px
-═══════════════════════════════════════════════════════ */
 @media(max-width:768px){
-
-  /* Container tighter on mobile */
   .container{padding:0 12px 100px;}
-
-  /* Header smaller */
-  header{padding:20px 0 16px;}
+  header{padding:20px 0 14px;}
   .hbadge{font-size:10px;padding:2px 10px;}
   .hsub{font-size:11px;letter-spacing:3px;}
   .sync-bar{font-size:12px;flex-wrap:wrap;gap:8px;}
-
-  /* ── BOTTOM NAV TAB BAR ── */
-  .tabs{
-    position:fixed;bottom:0;left:0;right:0;z-index:100;
-    margin:0;border-bottom:none;border-top:1px solid var(--border);
-    background:var(--rink-mid);
-    display:flex;justify-content:space-around;align-items:stretch;
-    padding:0;gap:0;
-    box-shadow:0 -4px 20px rgba(0,0,0,.4);
-  }
-  .tab{
-    flex:1;
-    border:none;border-radius:0;bottom:0;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    padding:8px 4px 10px;
-    font-size:9px;letter-spacing:1px;
-    gap:3px;
-  }
-  .tab.active{
-    background:transparent;border-color:transparent;
-    border-top:2px solid var(--blue-line);
-    color:var(--blue-line);
-    padding-top:6px;
-  }
-  /* emoji icon bigger */
+  .tabs{position:fixed;bottom:0;left:0;right:0;z-index:100;margin:0;border-bottom:none;border-top:1px solid var(--border);background:var(--rink-mid);display:flex;justify-content:space-around;align-items:stretch;padding:0;gap:0;box-shadow:0 -4px 20px rgba(0,0,0,.4);}
+  .tab{flex:1;border:none;border-radius:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px 10px;font-size:9px;letter-spacing:1px;gap:3px;}
+  .tab.active{background:transparent;border-color:transparent;border-top:2px solid var(--blue-line);color:var(--blue-line);padding-top:6px;}
   .tab-icon{font-size:20px;line-height:1;display:block;}
-
-  /* ── SCORING REF — compact ── */
   .sref{font-size:13px;padding:9px 12px;gap:12px;}
-
-  /* ── STANDINGS — hide desktop grid, show mobile cards ── */
   .sh{display:none;}
-  .sr{
-    display:flex;flex-direction:column;
-    padding:14px 16px;margin-bottom:8px;
-    background:var(--rink-mid);border:1px solid var(--border);
-    border-radius:10px;gap:0;
-  }
+  .sr{display:flex;flex-direction:column;padding:14px 16px;margin-bottom:8px;background:var(--rink-mid);border:1px solid var(--border);border-radius:10px;gap:0;}
   .sr-top{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
   .sr-stats{display:flex;gap:0;width:100%;}
-  .sr-stat{flex:1;display:flex;flex-direction:column;align-items:center;padding:6px 0;
-    border-right:1px solid var(--border);}
+  .sr-stat{flex:1;display:flex;flex-direction:column;align-items:center;padding:6px 0;border-right:1px solid var(--border);}
   .sr-stat:last-child{border-right:none;}
-  .sr-stat-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;
-    text-transform:uppercase;color:var(--text-dim);margin-bottom:2px;}
+  .sr-stat-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:2px;}
   .sr-stat-val{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--text-main);}
-  .sr-stat-val.gold{color:var(--gold);}
-  .sr-stat-val.blue{color:#7ec8e3;}
-  .rb{font-size:30px;}
-  .cn{font-size:22px;}
+  .sr-stat-val.gold{color:var(--gold);}.sr-stat-val.blue{color:#7ec8e3;}
+  .rb{font-size:30px;}.cn{font-size:22px;}
   .pbw{grid-column:unset;margin:8px 0 0;}
-
-  /* ── ALL PICKS — mobile contestant picker ── */
-  .ptw{display:none;} /* hide desktop table */
-
-  /* contestant selector row */
-  .mob-picks-selector{
-    display:flex;align-items:center;gap:10px;margin-bottom:16px;
-    background:var(--rink-mid);border:1px solid var(--border);border-radius:8px;padding:12px 14px;
-  }
-  .mob-picks-selector label{
-    font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;
-    text-transform:uppercase;color:var(--text-dim);white-space:nowrap;
-  }
-  .mob-picks-selector select{
-    flex:1;background:var(--rink-light);border:1px solid var(--border);border-radius:6px;
-    padding:8px 10px;color:var(--text-main);font-family:'Barlow Condensed',sans-serif;
-    font-size:16px;outline:none;
-  }
-
-  /* contestant summary bar */
-  .mob-contestant-header{
-    background:linear-gradient(135deg,var(--rink-light),var(--rink-mid));
-    border:1px solid var(--border);border-radius:10px;
-    padding:14px 16px;margin-bottom:14px;
-    display:flex;justify-content:space-between;align-items:center;
-  }
+  .ptw{display:none;}
+  .mob-picks-selector{display:flex;align-items:center;gap:10px;margin-bottom:16px;background:var(--rink-mid);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+  .mob-picks-selector label{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;}
+  .mob-picks-selector select{flex:1;background:var(--rink-light);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text-main);font-family:'Barlow Condensed',sans-serif;font-size:16px;outline:none;}
+  .mob-contestant-header{background:linear-gradient(135deg,var(--rink-light),var(--rink-mid));border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
   .mob-contestant-name{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;}
   .mob-contestant-pts{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--gold);line-height:1;}
-  .mob-contestant-pts-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;
-    letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;text-align:right;}
-
-  /* individual pick rows */
+  .mob-contestant-pts-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;text-align:right;}
   .mob-pick-list{display:flex;flex-direction:column;gap:8px;}
-  .mob-pick-row{
-    display:flex;align-items:center;
-    background:var(--rink-mid);border:1px solid var(--border);border-radius:8px;
-    padding:11px 14px;gap:12px;
-  }
+  .mob-pick-row{display:flex;align-items:center;background:var(--rink-mid);border:1px solid var(--border);border-radius:8px;padding:11px 14px;gap:12px;}
   .mob-pick-row.mob-elim{background:var(--elim-bg);border-color:rgba(180,0,0,.2);}
-  .mob-pick-group{
-    font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--blue-line);
-    min-width:28px;text-align:center;
-  }
+  .mob-pick-group{font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--blue-line);min-width:28px;text-align:center;}
   .mob-pick-info{flex:1;min-width:0;}
-  .mob-pick-name{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;
-    color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mob-pick-name{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .mob-pick-row.mob-elim .mob-pick-name{color:#666;text-decoration:line-through;}
   .mob-pick-team{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--text-dim);letter-spacing:1px;}
   .mob-pick-row.mob-elim .mob-pick-team{color:#555;}
@@ -311,36 +146,18 @@ td.elim .pt2{color:#555;} td.elim .pp{color:#666;}
   .mob-pick-stats b{color:var(--text-main);}
   .mob-pick-pts{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--gold);line-height:1;min-width:44px;text-align:right;}
   .mob-pick-row.mob-elim .mob-pick-pts{color:#555;}
-
-  /* ── PLAYERS — mobile single-column list ── */
   .pgrid{grid-template-columns:1fr;gap:8px;}
   .card{padding:12px 14px;}
-  .cna{font-size:17px;}
-  .cst{font-size:14px;}
-  .cpts{font-size:24px;}
+  .cna{font-size:17px;}.cst{font-size:14px;}.cpts{font-size:24px;}
   .gl{font-size:13px;margin:20px 0 8px;}
-
-  /* ── ADMIN ── */
   .agrid{grid-template-columns:1fr;}
-  .peg{grid-template-columns:1fr 1fr;}
+  .spgrid{grid-template-columns:1fr 1fr 1fr;}
 }
-
-/* Hide mobile-only elements on desktop */
 .mob-picks-selector,.mob-contestant-header,.mob-pick-list{display:none;}
-@media(max-width:768px){
-  .mob-picks-selector,.mob-contestant-header,.mob-pick-list{display:flex;}
-  .mob-contestant-header{display:flex;}
-  .mob-pick-list{display:flex;}
-}
-/* mob-picks-selector always flex on mobile */
-@media(max-width:768px){
-  .mob-picks-selector{display:flex;}
-}
 </style>
 </head>
 <body>
 <div class="container">
-
 <header>
   <div class="hbadge">2025 – 26 Season</div>
   <h1>NHL <span>Playoff</span> Pool</h1>
@@ -352,320 +169,160 @@ td.elim .pt2{color:#555;} td.elim .pp{color:#666;}
   </div>
 </header>
 
-<!-- TABS — icons shown on mobile bottom bar -->
 <div class="tabs">
-  <div class="tab active" onclick="sw('standings')">
-    <span class="tab-icon">🏆</span>Standings
-  </div>
-  <div class="tab" onclick="sw('picks')">
-    <span class="tab-icon">📋</span>Picks
-  </div>
-  <div class="tab" onclick="sw('players')">
-    <span class="tab-icon">🏒</span>Players
-  </div>
-  <div class="tab" onclick="sw('admin')">
-    <span class="tab-icon">⚙️</span>Admin
-  </div>
+  <div class="tab active" onclick="sw('standings')"><span class="tab-icon">🏆</span>Standings</div>
+  <div class="tab" onclick="sw('picks')"><span class="tab-icon">📋</span>Picks</div>
+  <div class="tab" onclick="sw('players')"><span class="tab-icon">🏒</span>Players</div>
+  <div class="tab" onclick="sw('admin')"><span class="tab-icon">⚙️</span>Admin</div>
 </div>
 
-<!-- ════════════════════════════════════
-     STANDINGS TAB
-════════════════════════════════════ -->
 <div id="tab-standings" class="section active">
   <div class="sref">
     <div>Skaters: Goal <span>+3</span> · Assist <span>+2</span> · PIM <span>+0.5</span></div>
     <div>Goalies: Win <span>+3</span> · Shutout <span>+3</span></div>
   </div>
-  <!-- Desktop header row -->
-  <div class="sh">
-    <div>#</div><div>Contestant</div>
-    <div style="text-align:center">G</div><div style="text-align:center">A</div>
-    <div style="text-align:center">PIM</div><div style="text-align:center">W</div>
-    <div style="text-align:center">SO</div><div style="text-align:center">Pts</div>
-  </div>
+  <div class="sh"><div>#</div><div>Contestant</div><div style="text-align:center">G</div><div style="text-align:center">A</div><div style="text-align:center">PIM</div><div style="text-align:center">W</div><div style="text-align:center">SO</div><div style="text-align:center">Pts</div></div>
   <div id="slist"></div>
 </div>
 
-<!-- ════════════════════════════════════
-     ALL PICKS TAB
-════════════════════════════════════ -->
 <div id="tab-picks" class="section">
   <div class="notice"><strong>Note:</strong> Struck-through picks belong to eliminated teams and can no longer score.</div>
-
-  <!-- MOBILE: contestant picker + pick list -->
-  <div class="mob-picks-selector" style="display:none">
-    <label>View picks for</label>
-    <select id="mob-contestant-pick" onchange="renderMobPicks()">
-      <option value="">— select contestant —</option>
-    </select>
-  </div>
+  <div class="mob-picks-selector"><label>View picks for</label><select id="mob-contestant-pick" onchange="renderMobPicks()"><option value="">— select contestant —</option></select></div>
   <div id="mob-contestant-header" class="mob-contestant-header" style="display:none"></div>
-  <div id="mob-pick-list" class="mob-pick-list" style="display:none;flex-direction:column;gap:8px;"></div>
-
-  <!-- DESKTOP: full picks table -->
-  <div class="ptw">
-    <table class="pt">
-      <thead id="pthead"></thead>
-      <tbody id="ptbody"></tbody>
-    </table>
-  </div>
+  <div id="mob-pick-list" class="mob-pick-list"></div>
+  <div class="ptw"><table class="pt"><thead id="pthead"></thead><tbody id="ptbody"></tbody></table></div>
 </div>
 
-<!-- ════════════════════════════════════
-     PLAYERS TAB
-════════════════════════════════════ -->
 <div id="tab-players" class="section">
-  <div class="notice"><strong>Live:</strong> Stats fetched from the NHL API (playoff totals). Use ↻ Sync to refresh.</div>
+  <div class="notice"><strong>Live:</strong> Stats and eliminations fetched automatically from the NHL API each sync.</div>
   <div id="plist"></div>
 </div>
 
-<!-- ════════════════════════════════════
-     ADMIN TAB
-════════════════════════════════════ -->
 <div id="tab-admin" class="section">
-  <!-- Lock screen -->
   <div class="als" id="als">
     <h2>🔒 Admin Access</h2>
-    <p>Enter your PIN to manage the pool</p>
+    <p>Enter the password to manage stats</p>
     <div class="piw">
-      <input class="pi" type="password" id="piinput" maxlength="6" placeholder="••••"
-        onkeydown="if(event.key==='Enter')checkPin()">
+      <input class="pi" type="password" id="piinput" maxlength="6" placeholder="••••" onkeydown="if(event.key==='Enter')checkPin()">
       <button class="btn bp" onclick="checkPin()">Enter</button>
     </div>
     <div class="pe" id="pe"></div>
-    <div style="margin-top:18px;font-family:'Barlow Condensed';font-size:14px;color:var(--text-dim);letter-spacing:1px;">
-      Default PIN: <strong style="color:var(--gold)">1234</strong> — change it once unlocked
-    </div>
   </div>
-
-  <!-- Admin panel -->
   <div id="apanel" style="display:none">
     <div style="display:flex;justify-content:flex-end;margin-bottom:10px;gap:8px;align-items:center;">
       <span style="font-family:'Barlow Condensed';font-size:14px;color:var(--text-dim);letter-spacing:1px;">Admin unlocked</span>
       <button class="lob" onclick="lockAdmin()">🔒 Lock</button>
     </div>
     <div class="agrid">
-
-      <!-- Add Contestant -->
-      <div class="ac">
-        <h3>Add Contestant</h3>
-        <div class="fr"><label>Name</label><input type="text" id="ncname" placeholder="e.g. John Smith"></div>
-        <button class="btn bp" onclick="addC()">+ Add</button>
-        <div style="margin-top:12px;font-family:'Barlow Condensed';font-size:12px;letter-spacing:2px;
-          text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;">Contestants</div>
-        <div class="cli" id="cli"></div>
-      </div>
-
-      <!-- Eliminated Teams -->
       <div class="ac">
         <h3>Eliminated Teams</h3>
-        <div style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">Click to toggle. Red = eliminated.</div>
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">Auto-detected from the NHL playoff bracket API on each sync. Red = eliminated.</div>
         <div class="tel" id="tel"></div>
       </div>
-
-      <!-- Change PIN -->
-      <div class="ac">
-        <h3>Change Admin PIN</h3>
-        <div class="fr"><label>Current PIN</label><input type="password" id="opin" placeholder="Current PIN"></div>
-        <div class="fr"><label>New PIN (4–6 digits)</label><input type="password" id="npin" placeholder="New PIN"></div>
-        <button class="btn bp" onclick="changePin()">Update PIN</button>
-      </div>
-
-      <!-- Manual Stats Override -->
       <div class="ac">
         <h3>Manual Stats Override</h3>
-        <div class="notice" style="margin-bottom:8px;font-size:11px;">
-          <strong>Note:</strong> Overrides take priority over live API data. Clear to revert.
-        </div>
-        <div class="fr"><label>Player</label>
-          <select id="spsel" onchange="prefillStats()"><option value="">— choose player —</option></select>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;">
+        <div class="notice" style="margin-bottom:10px;font-size:11px;"><strong>Note:</strong> Use only if live API data is incorrect. Overrides live data until cleared.</div>
+        <div class="fr"><label>Player</label><select id="spsel" onchange="prefillStats()"><option value="">— choose player —</option></select></div>
+        <div class="spgrid">
           <div class="fr"><label id="sl1">Goals/Wins</label><input type="number" id="ss1" min="0" placeholder="0"></div>
           <div class="fr"><label id="sl2">Assists/SO</label><input type="number" id="ss2" min="0" placeholder="0"></div>
           <div class="fr"><label id="sl3">PIM</label><input type="number" id="ss3" min="0" placeholder="0"></div>
         </div>
         <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
-          <button class="btn bp" onclick="manualStats()">Save</button>
+          <button class="btn bp" onclick="manualStats()">Save Override</button>
           <button class="btn bd bsm" onclick="clearOvr()">Clear Override</button>
         </div>
       </div>
-
-      <!-- Assign Picks -->
-      <div class="ac" style="grid-column:1/-1">
-        <h3>Assign Picks</h3>
-        <div class="fr"><label>Contestant</label>
-          <select id="pcsel" onchange="renderPE()"><option value="">— choose contestant —</option></select>
-        </div>
-        <div id="pea"></div>
-        <div style="margin-top:12px;"><button class="btn bp" onclick="savePicks()">Save Picks</button></div>
-      </div>
-
     </div>
   </div>
 </div>
-
-</div><!-- /container -->
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════
-//  POOL DATA
-// ══════════════════════════════════════════
 const GROUPS=[
-  {id:1,players:[
-    {name:"Nikita Kucherov",team:"TBL",type:"skater",id:8476453},
-    {name:"Connor McDavid",team:"EDM",type:"skater",id:8478402},
-    {name:"Nathan MacKinnon",team:"COL",type:"skater",id:8477492},
-    {name:"Leon Draisaitl",team:"EDM",type:"skater",id:8477934},
-  ]},
-  {id:2,players:[
-    {name:"David Pastrnak",team:"BOS",type:"skater",id:8477956},
-    {name:"Martin Necas",team:"COL",type:"skater",id:8480762},
-    {name:"Mikko Rantanen",team:"DAL",type:"skater",id:8478420},
-    {name:"Jack Eichel",team:"VGK",type:"skater",id:8478403},
-  ]},
-  {id:3,players:[
-    {name:"Nick Suzuki",team:"MTL",type:"skater",id:8480800},
-    {name:"Mark Stone",team:"VGK",type:"skater",id:8475913},
-    {name:"Jason Robertson",team:"DAL",type:"skater",id:8481528},
-    {name:"Kirill Kaprizov",team:"MIN",type:"skater",id:8481600},
-  ]},
-  {id:4,players:[
-    {name:"Matt Boldy",team:"MIN",type:"skater",id:8482109},
-    {name:"Sidney Crosby",team:"PIT",type:"skater",id:8471675},
-    {name:"Cole Caufield",team:"MTL",type:"skater",id:8481540},
-    {name:"Jake Guentzel",team:"TBL",type:"skater",id:8477404},
-  ]},
-  {id:5,players:[
-    {name:"Brandon Hagel",team:"TBL",type:"skater",id:8480801},
-    {name:"Evgeni Malkin",team:"PIT",type:"skater",id:8471215},
-    {name:"Clayton Keller",team:"UTA",type:"skater",id:8479343},
-    {name:"Wyatt Johnston",team:"DAL",type:"skater",id:8483515},
-  ]},
-  {id:6,players:[
-    {name:"Tage Thompson",team:"BUF",type:"skater",id:8480993},
-    {name:"Sebastian Aho",team:"CAR",type:"skater",id:8478427},
-    {name:"Brady Tkachuk",team:"OTT",type:"skater",id:8481528},
-    {name:"Mitch Marner",team:"VGK",type:"skater",id:8478483},
-  ]},
-  {id:7,players:[
-    {name:"Tim Stützle",team:"OTT",type:"skater",id:8482116},
-    {name:"Artemi Panarin",team:"LAK",type:"skater",id:8478550},
-    {name:"Leo Carlsson",team:"ANA",type:"skater",id:8484144},
-    {name:"Travis Konecny",team:"PHI",type:"skater",id:8479365},
-  ]},
-  {id:8,players:[
-    {name:"Dylan Guenther",team:"UTA",type:"skater",id:8483453},
-    {name:"Andrei Svechnikov",team:"CAR",type:"skater",id:8480830},
-    {name:"Zach Hyman",team:"EDM",type:"skater",id:8475786},
-    {name:"Cutter Gauthier",team:"ANA",type:"skater",id:8484882},
-  ]},
-  {id:9,players:[
-    {name:"Juraj Slafkovský",team:"MTL",type:"skater",id:8484145},
-    {name:"Adrian Kempe",team:"LAK",type:"skater",id:8477960},
-    {name:"Seth Jarvis",team:"CAR",type:"skater",id:8482655},
-    {name:"Alex Tuch",team:"BUF",type:"skater",id:8478450},
-  ]},
-  {id:10,players:[
-    {name:"Porter Martone",team:"PHI",type:"skater",id:8487950},
-    {name:"Nick Schmaltz",team:"UTA",type:"skater",id:8478057},
-    {name:"Drake Batherson",team:"OTT",type:"skater",id:8481533},
-    {name:"Morgan Geekie",team:"BOS",type:"skater",id:8478476},
-  ]},
-  {id:11,players:[
-    {name:"Cale Makar",team:"COL",type:"skater",id:8480069},
-    {name:"Evan Bouchard",team:"EDM",type:"skater",id:8480144},
-    {name:"Quinn Hughes",team:"VAN",type:"skater",id:8480800},
-    {name:"Rasmus Dahlin",team:"BUF",type:"skater",id:8480769},
-  ]},
-  {id:12,players:[
-    {name:"Lane Hutson",team:"MTL",type:"skater",id:8487947},
-    {name:"Darren Raddysh",team:"TBL",type:"skater",id:8478438},
-    {name:"Shayne Gostisbehere",team:"CAR",type:"skater",id:8477494},
-    {name:"Erik Karlsson",team:"PIT",type:"skater",id:8474578},
-  ]},
-  {id:13,players:[
-    {name:"Charlie McAvoy",team:"BOS",type:"skater",id:8479325},
-    {name:"John Carlson",team:"ANA",type:"skater",id:8474270},
-    {name:"Jake Sanderson",team:"OTT",type:"skater",id:8483411},
-    {name:"Miro Heiskanen",team:"DAL",type:"skater",id:8481522},
-  ]},
-  {id:14,players:[
-    {name:"Scott Wedgewood",team:"COL",type:"goalie",id:8476419},
-    {name:"Jake Oettinger",team:"DAL",type:"goalie",id:8480382},
-    {name:"Andrei Vasilevskiy",team:"TBL",type:"goalie",id:8476883},
-    {name:"Ukko-Pekka Luukkonen",team:"BUF",type:"goalie",id:8481533},
-  ]},
-  {id:15,players:[
-    {name:"Karel Vejmelka",team:"UTA",type:"goalie",id:8480353},
-    {name:"Carter Hart",team:"VGK",type:"goalie",id:8479361},
-    {name:"Linus Ullmark",team:"OTT",type:"goalie",id:8476945},
-    {name:"Stuart Skinner",team:"PIT",type:"goalie",id:8480407},
-  ]},
+  {id:1,players:[{name:"Nikita Kucherov",team:"TBL",type:"skater",id:8476453},{name:"Connor McDavid",team:"EDM",type:"skater",id:8478402},{name:"Nathan MacKinnon",team:"COL",type:"skater",id:8477492},{name:"Leon Draisaitl",team:"EDM",type:"skater",id:8477934}]},
+  {id:2,players:[{name:"David Pastrnak",team:"BOS",type:"skater",id:8477956},{name:"Martin Necas",team:"COL",type:"skater",id:8480762},{name:"Mikko Rantanen",team:"DAL",type:"skater",id:8478420},{name:"Jack Eichel",team:"VGK",type:"skater",id:8478403}]},
+  {id:3,players:[{name:"Nick Suzuki",team:"MTL",type:"skater",id:8480800},{name:"Mark Stone",team:"VGK",type:"skater",id:8475913},{name:"Jason Robertson",team:"DAL",type:"skater",id:8481528},{name:"Kirill Kaprizov",team:"MIN",type:"skater",id:8481600}]},
+  {id:4,players:[{name:"Matt Boldy",team:"MIN",type:"skater",id:8482109},{name:"Sidney Crosby",team:"PIT",type:"skater",id:8471675},{name:"Cole Caufield",team:"MTL",type:"skater",id:8481540},{name:"Jake Guentzel",team:"TBL",type:"skater",id:8477404}]},
+  {id:5,players:[{name:"Brandon Hagel",team:"TBL",type:"skater",id:8480801},{name:"Evgeni Malkin",team:"PIT",type:"skater",id:8471215},{name:"Clayton Keller",team:"UTA",type:"skater",id:8479343},{name:"Wyatt Johnston",team:"DAL",type:"skater",id:8483515}]},
+  {id:6,players:[{name:"Tage Thompson",team:"BUF",type:"skater",id:8480993},{name:"Sebastian Aho",team:"CAR",type:"skater",id:8478427},{name:"Brady Tkachuk",team:"OTT",type:"skater",id:8481528},{name:"Mitch Marner",team:"VGK",type:"skater",id:8478483}]},
+  {id:7,players:[{name:"Tim Stützle",team:"OTT",type:"skater",id:8482116},{name:"Artemi Panarin",team:"LAK",type:"skater",id:8478550},{name:"Leo Carlsson",team:"ANA",type:"skater",id:8484144},{name:"Travis Konecny",team:"PHI",type:"skater",id:8479365}]},
+  {id:8,players:[{name:"Dylan Guenther",team:"UTA",type:"skater",id:8483453},{name:"Andrei Svechnikov",team:"CAR",type:"skater",id:8480830},{name:"Zach Hyman",team:"EDM",type:"skater",id:8475786},{name:"Cutter Gauthier",team:"ANA",type:"skater",id:8484882}]},
+  {id:9,players:[{name:"Juraj Slafkovský",team:"MTL",type:"skater",id:8484145},{name:"Adrian Kempe",team:"LAK",type:"skater",id:8477960},{name:"Seth Jarvis",team:"CAR",type:"skater",id:8482655},{name:"Alex Tuch",team:"BUF",type:"skater",id:8478450}]},
+  {id:10,players:[{name:"Porter Martone",team:"PHI",type:"skater",id:8487950},{name:"Nick Schmaltz",team:"UTA",type:"skater",id:8478057},{name:"Drake Batherson",team:"OTT",type:"skater",id:8481533},{name:"Morgan Geekie",team:"BOS",type:"skater",id:8478476}]},
+  {id:11,players:[{name:"Cale Makar",team:"COL",type:"skater",id:8480069},{name:"Evan Bouchard",team:"EDM",type:"skater",id:8480144},{name:"Quinn Hughes",team:"VAN",type:"skater",id:8480800},{name:"Rasmus Dahlin",team:"BUF",type:"skater",id:8480769}]},
+  {id:12,players:[{name:"Lane Hutson",team:"MTL",type:"skater",id:8487947},{name:"Darren Raddysh",team:"TBL",type:"skater",id:8478438},{name:"Shayne Gostisbehere",team:"CAR",type:"skater",id:8477494},{name:"Erik Karlsson",team:"PIT",type:"skater",id:8474578}]},
+  {id:13,players:[{name:"Charlie McAvoy",team:"BOS",type:"skater",id:8479325},{name:"John Carlson",team:"ANA",type:"skater",id:8474270},{name:"Jake Sanderson",team:"OTT",type:"skater",id:8483411},{name:"Miro Heiskanen",team:"DAL",type:"skater",id:8481522}]},
+  {id:14,players:[{name:"Scott Wedgewood",team:"COL",type:"goalie",id:8476419},{name:"Jake Oettinger",team:"DAL",type:"goalie",id:8480382},{name:"Andrei Vasilevskiy",team:"TBL",type:"goalie",id:8476883},{name:"Ukko-Pekka Luukkonen",team:"BUF",type:"goalie",id:8481533}]},
+  {id:15,players:[{name:"Karel Vejmelka",team:"UTA",type:"goalie",id:8480353},{name:"Carter Hart",team:"VGK",type:"goalie",id:8479361},{name:"Linus Ullmark",team:"OTT",type:"goalie",id:8476945},{name:"Stuart Skinner",team:"PIT",type:"goalie",id:8480407}]},
+];
+
+const CONTESTANTS=[
+  {name:"Adam",picks:{1:"Nathan MacKinnon",2:"Mikko Rantanen",3:"Jason Robertson",4:"Cole Caufield",5:"Wyatt Johnston",6:"Tage Thompson",7:"Travis Konecny",8:"Cutter Gauthier",9:"Seth Jarvis",10:"Porter Martone",11:"Cale Makar",12:"Lane Hutson",13:"Miro Heiskanen",14:"Scott Wedgewood",15:"Linus Ullmark"}},
+  {name:"Alex",picks:{1:"Connor McDavid",2:"Mikko Rantanen",3:"Kirill Kaprizov",4:"Cole Caufield",5:"Clayton Keller",6:"Brady Tkachuk",7:"Travis Konecny",8:"Dylan Guenther",9:"Seth Jarvis",10:"Morgan Geekie",11:"Cale Makar",12:"Lane Hutson",13:"Charlie McAvoy",14:"Andrei Vasilevskiy",15:"Carter Hart"}},
+  {name:"Brad",picks:{1:"Nathan MacKinnon",2:"Martin Necas",3:"Kirill Kaprizov",4:"Sidney Crosby",5:"Brandon Hagel",6:"Sebastian Aho",7:"Artemi Panarin",8:"Zach Hyman",9:"Seth Jarvis",10:"Drake Batherson",11:"Cale Makar",12:"Lane Hutson",13:"Miro Heiskanen",14:"Scott Wedgewood",15:"Linus Ullmark"}},
+  {name:"Josh",picks:{1:"Connor McDavid",2:"Martin Necas",3:"Jason Robertson",4:"Jake Guentzel",5:"Brandon Hagel",6:"Sebastian Aho",7:"Travis Konecny",8:"Andrei Svechnikov",9:"Seth Jarvis",10:"Porter Martone",11:"Evan Bouchard",12:"Darren Raddysh",13:"Miro Heiskanen",14:"Andrei Vasilevskiy",15:"Carter Hart"}},
+  {name:"Justice",picks:{1:"Nikita Kucherov",2:"Martin Necas",3:"Kirill Kaprizov",4:"Jake Guentzel",5:"Wyatt Johnston",6:"Tage Thompson",7:"Tim Stützle",8:"Zach Hyman",9:"Seth Jarvis",10:"Morgan Geekie",11:"Cale Makar",12:"Darren Raddysh",13:"Miro Heiskanen",14:"Andrei Vasilevskiy",15:"Karel Vejmelka"}},
+  {name:"Justin",picks:{1:"Nathan MacKinnon",2:"Martin Necas",3:"Nick Suzuki",4:"Cole Caufield",5:"Wyatt Johnston",6:"Tage Thompson",7:"Tim Stützle",8:"Dylan Guenther",9:"Adrian Kempe",10:"Morgan Geekie",11:"Evan Bouchard",12:"Lane Hutson",13:"Miro Heiskanen",14:"Scott Wedgewood",15:"Karel Vejmelka"}},
+  {name:"Kyle",picks:{1:"Connor McDavid",2:"Mikko Rantanen",3:"Kirill Kaprizov",4:"Sidney Crosby",5:"Clayton Keller",6:"Sebastian Aho",7:"Artemi Panarin",8:"Zach Hyman",9:"Adrian Kempe",10:"Drake Batherson",11:"Cale Makar",12:"Erik Karlsson",13:"Miro Heiskanen",14:"Jake Oettinger",15:"Linus Ullmark"}},
+  {name:"Mark",picks:{1:"Nathan MacKinnon",2:"Martin Necas",3:"Mark Stone",4:"Jake Guentzel",5:"Brandon Hagel",6:"Mitch Marner",7:"Artemi Panarin",8:"Zach Hyman",9:"Seth Jarvis",10:"Morgan Geekie",11:"Cale Makar",12:"Shayne Gostisbehere",13:"Charlie McAvoy",14:"Scott Wedgewood",15:"Carter Hart"}},
+  {name:"Matt",picks:{1:"Connor McDavid",2:"Mikko Rantanen",3:"Nick Suzuki",4:"Cole Caufield",5:"Brandon Hagel",6:"Brady Tkachuk",7:"Leo Carlsson",8:"Dylan Guenther",9:"Alex Tuch",10:"Porter Martone",11:"Cale Makar",12:"Darren Raddysh",13:"Charlie McAvoy",14:"Andrei Vasilevskiy",15:"Linus Ullmark"}},
 ];
 
 const ALL_TEAMS=[...new Set(GROUPS.flatMap(g=>g.players.map(p=>p.team)))].sort();
-const PM={};
-GROUPS.forEach(g=>g.players.forEach(p=>{PM[p.name]=p;}));
+const PM={};GROUPS.forEach(g=>g.players.forEach(p=>{PM[p.name]=p;}));
 
-// ══════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════
-function loadSt(){
-  try{const s=localStorage.getItem('nhl_pool_v3');if(s)return JSON.parse(s);}catch(e){}
-  return{contestants:[],live:{},overrides:{},elim:[],lastSync:null,pin:'1996'};
-}
-function saveSt(){localStorage.setItem('nhl_pool_v3',JSON.stringify(S));}
+function loadSt(){try{const s=localStorage.getItem('nhl_pool_v4');if(s)return JSON.parse(s);}catch(e){}return{live:{},overrides:{},elim:[],lastSync:null};}
+function saveSt(){localStorage.setItem('nhl_pool_v4',JSON.stringify(S));}
 let S=loadSt();
 let unlocked=false;
-
-// ══════════════════════════════════════════
-//  RESPONSIVE DETECTION
-// ══════════════════════════════════════════
-const isMobile=()=>window.innerWidth<=768;
-
-// ══════════════════════════════════════════
-//  NHL API
-// ══════════════════════════════════════════
+const ADMIN_PIN='1996';
 const SEASON='20252026',GT=3;
 
 async function proxyFetch(url){
   const r=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-  const j=await r.json();
-  return JSON.parse(j.contents);
+  const j=await r.json();return JSON.parse(j.contents);
+}
+
+async function fetchPlayoffEliminations(){
+  try{
+    const data=await proxyFetch(`https://api-web.nhle.com/v1/playoff-bracket/2026`);
+    const elim=new Set();
+    const rounds=data?.rounds||data?.bracket?.rounds||[];
+    rounds.forEach(rd=>{
+      (rd.series||[]).forEach(s=>{
+        // A finished series will have a loser
+        if(s?.loser?.abbrev) elim.add(s.loser.abbrev);
+        // Also check if top/bottom seed has 4 wins
+        const tW=s?.topSeedWins??s?.topSeedSeriesWins??0;
+        const bW=s?.bottomSeedWins??s?.bottomSeedSeriesWins??0;
+        if(tW>=4&&s?.bottomSeed?.abbrev) elim.add(s.bottomSeed.abbrev);
+        if(bW>=4&&s?.topSeed?.abbrev) elim.add(s.topSeed.abbrev);
+      });
+    });
+    return[...elim];
+  }catch(e){console.warn('Bracket fetch failed',e);return S.elim||[];}
 }
 
 async function syncNow(){
   setSync('syncing','Fetching NHL API…');
   try{
-    const [sk,gl]=await Promise.all([
+    const[sk,gl,elim]=await Promise.all([
       proxyFetch(`https://api.nhle.com/stats/rest/en/skater/summary?limit=500&sort=points&cayenneExp=seasonId=${SEASON}%20and%20gameTypeId=${GT}`),
       proxyFetch(`https://api.nhle.com/stats/rest/en/goalie/summary?limit=200&sort=wins&cayenneExp=seasonId=${SEASON}%20and%20gameTypeId=${GT}`),
+      fetchPlayoffEliminations(),
     ]);
     let pimMap={};
-    try{
-      const pd=await proxyFetch(`https://api.nhle.com/stats/rest/en/skater/penaltyShots?limit=500&sort=penaltyMinutes&cayenneExp=seasonId=${SEASON}%20and%20gameTypeId=${GT}`);
-      if(pd&&pd.data) pd.data.forEach(p=>{pimMap[norm(p.skaterFullName||'')]=p.penaltyMinutes||0;});
-    }catch(e){}
+    try{const pd=await proxyFetch(`https://api.nhle.com/stats/rest/en/skater/penaltyShots?limit=500&sort=penaltyMinutes&cayenneExp=seasonId=${SEASON}%20and%20gameTypeId=${GT}`);
+      if(pd&&pd.data)pd.data.forEach(p=>{pimMap[norm(p.skaterFullName||'')]=p.penaltyMinutes||0;});}catch(e){}
     const ns={};
-    if(sk&&sk.data) sk.data.forEach(p=>{
-      const m=matchPlayer(p.skaterFullName||'','skater');
-      if(m) ns[m.name]={goals:p.goals||0,assists:p.assists||0,pim:pimMap[norm(p.skaterFullName||'')]??p.penaltyMinutes??0,wins:0,shutouts:0};
-    });
-    if(gl&&gl.data) gl.data.forEach(p=>{
-      const m=matchPlayer(p.goalieFullName||'','goalie');
-      if(m) ns[m.name]={wins:p.wins||0,shutouts:p.shutouts||0,goals:0,assists:0,pim:0};
-    });
-    S.live=ns;
-    S.lastSync=new Date().toLocaleTimeString();
-    saveSt();renderAll();
-    setSync('ok',`Synced · ${S.lastSync}`);
-    toast('Stats updated ✓');
+    if(sk&&sk.data)sk.data.forEach(p=>{const m=matchPlayer(p.skaterFullName||'','skater');if(m)ns[m.name]={goals:p.goals||0,assists:p.assists||0,pim:pimMap[norm(p.skaterFullName||'')]??p.penaltyMinutes??0,wins:0,shutouts:0};});
+    if(gl&&gl.data)gl.data.forEach(p=>{const m=matchPlayer(p.goalieFullName||'','goalie');if(m)ns[m.name]={wins:p.wins||0,shutouts:p.shutouts||0,goals:0,assists:0,pim:0};});
+    S.live=ns;S.elim=elim;S.lastSync=new Date().toLocaleTimeString();
+    saveSt();renderAll();setSync('ok',`Synced · ${S.lastSync}`);toast('Stats & eliminations updated ✓');
   }catch(err){
-    console.warn('Sync error:',err);
-    setSync('err','Sync failed — using cached data');
-    toast('API sync failed. Cached data shown.');
+    console.warn('Sync error:',err);setSync('err','Sync failed — using cached data');toast('API sync failed. Cached data shown.');
   }
 }
 
@@ -673,411 +330,145 @@ const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 function matchPlayer(apiName,type){
   const a=norm(apiName);
   for(const p of Object.values(PM)){
-    if(p.type!==type) continue;
-    if(norm(p.name)===a) return p;
+    if(p.type!==type)continue;
+    if(norm(p.name)===a)return p;
     const ap=a.split(' '),pp=norm(p.name).split(' ');
-    if(ap[ap.length-1]===pp[pp.length-1]&&ap[0][0]===pp[0][0]) return p;
-  }
-  return null;
+    if(ap[ap.length-1]===pp[pp.length-1]&&ap[0][0]===pp[0][0])return p;
+  }return null;
 }
-function setSync(st,label){
-  document.getElementById('sdot').className='sdot '+st;
-  document.getElementById('slabel').textContent=label;
-}
+function setSync(st,label){document.getElementById('sdot').className='sdot '+st;document.getElementById('slabel').textContent=label;}
 
-// ══════════════════════════════════════════
-//  SCORING
-// ══════════════════════════════════════════
-function gps(name){return S.overrides[name]||S.live[name]||{goals:0,assists:0,pim:0,wins:0,shutouts:0};}
-function gpp(name){
-  const p=gps(name),info=PM[name];
-  if(!info)return 0;
-  return info.type==='goalie'?(p.wins||0)*3+(p.shutouts||0)*3:(p.goals||0)*3+(p.assists||0)*2+(p.pim||0)*.5;
-}
-function gcs(c){
-  let g=0,a=0,pim=0,w=0,so=0,tot=0;
-  Object.values(c.picks||{}).forEach(n=>{
-    if(!n)return;
-    const ps=gps(n),info=PM[n];
-    if(!info)return;
-    if(info.type==='skater'){g+=ps.goals||0;a+=ps.assists||0;pim+=ps.pim||0;}
-    if(info.type==='goalie'){w+=ps.wins||0;so+=ps.shutouts||0;}
-    tot+=gpp(n);
-  });
-  return{goals:g,assists:a,pim,wins:w,shutouts:so,total:tot};
-}
+function gps(n){return S.overrides[n]||S.live[n]||{goals:0,assists:0,pim:0,wins:0,shutouts:0};}
+function gpp(n){const p=gps(n),i=PM[n];if(!i)return 0;return i.type==='goalie'?(p.wins||0)*3+(p.shutouts||0)*3:(p.goals||0)*3+(p.assists||0)*2+(p.pim||0)*.5;}
+function gcs(c){let g=0,a=0,pim=0,w=0,so=0,tot=0;Object.values(c.picks||{}).forEach(n=>{if(!n)return;const ps=gps(n),i=PM[n];if(!i)return;if(i.type==='skater'){g+=ps.goals||0;a+=ps.assists||0;pim+=ps.pim||0;}if(i.type==='goalie'){w+=ps.wins||0;so+=ps.shutouts||0;}tot+=gpp(n);});return{goals:g,assists:a,pim,wins:w,shutouts:so,total:tot};}
 function isElim(t){return S.elim.includes(t);}
+const mob=()=>window.innerWidth<=768;
 
-// ══════════════════════════════════════════
-//  RENDER
-// ══════════════════════════════════════════
-function renderAll(){
-  renderStandings();
-  renderPicks();
-  renderPlayers();
-  renderAdminLists();
-  syncMobPicksSelector();
-}
+function renderAll(){renderStandings();renderPicks();renderPlayers();renderAdminPanel();syncMobPicks();}
 
-/* ── STANDINGS ── */
 function renderStandings(){
   const el=document.getElementById('slist');
-  if(!S.contestants.length){
-    el.innerHTML='<div class="empty">No contestants yet — add in Admin</div>';
-    return;
-  }
-  const ranked=S.contestants.map(c=>({...c,st:gcs(c)})).sort((a,b)=>b.st.total-a.st.total);
+  const ranked=[...CONTESTANTS].map(c=>({...c,st:gcs(c)})).sort((a,b)=>b.st.total-a.st.total);
   const mx=ranked[0]?.st.total||1;
-
-  if(isMobile()){
-    // Mobile card layout
-    el.innerHTML=ranked.map((c,i)=>{
-      const r=i+1,bc=r===1?'r1':r===2?'r2':r===3?'r3':'ro';
-      const pct=mx>0?Math.round(c.st.total/mx*100):0;
-      return`<div class="sr">
-        <div class="sr-top">
-          <div class="rb ${bc}">${r}</div>
-          <div class="cn">${c.name}</div>
-        </div>
-        <div class="sr-stats">
-          <div class="sr-stat">
-            <div class="sr-stat-label">Goals</div>
-            <div class="sr-stat-val">${c.st.goals}</div>
-          </div>
-          <div class="sr-stat">
-            <div class="sr-stat-label">Assists</div>
-            <div class="sr-stat-val">${c.st.assists}</div>
-          </div>
-          <div class="sr-stat">
-            <div class="sr-stat-label">PIM</div>
-            <div class="sr-stat-val">${c.st.pim}</div>
-          </div>
-          <div class="sr-stat">
-            <div class="sr-stat-label">Wins</div>
-            <div class="sr-stat-val blue">${c.st.wins}</div>
-          </div>
-          <div class="sr-stat">
-            <div class="sr-stat-label">SO</div>
-            <div class="sr-stat-val blue">${c.st.shutouts}</div>
-          </div>
-          <div class="sr-stat">
-            <div class="sr-stat-label">Points</div>
-            <div class="sr-stat-val gold">${c.st.total.toFixed(1)}</div>
-          </div>
-        </div>
-        <div class="pbw"><div class="pb" style="width:${pct}%"></div></div>
-      </div>`;
+  if(mob()){
+    el.innerHTML=ranked.map((c,i)=>{const r=i+1,bc=r===1?'r1':r===2?'r2':r===3?'r3':'ro',pct=mx>0?Math.round(c.st.total/mx*100):0;
+      return`<div class="sr"><div class="sr-top"><div class="rb ${bc}">${r}</div><div class="cn">${c.name}</div></div>
+      <div class="sr-stats">
+        <div class="sr-stat"><div class="sr-stat-label">Goals</div><div class="sr-stat-val">${c.st.goals}</div></div>
+        <div class="sr-stat"><div class="sr-stat-label">Assists</div><div class="sr-stat-val">${c.st.assists}</div></div>
+        <div class="sr-stat"><div class="sr-stat-label">PIM</div><div class="sr-stat-val">${c.st.pim}</div></div>
+        <div class="sr-stat"><div class="sr-stat-label">Wins</div><div class="sr-stat-val blue">${c.st.wins}</div></div>
+        <div class="sr-stat"><div class="sr-stat-label">SO</div><div class="sr-stat-val blue">${c.st.shutouts}</div></div>
+        <div class="sr-stat"><div class="sr-stat-label">Pts</div><div class="sr-stat-val gold">${c.st.total.toFixed(1)}</div></div>
+      </div><div class="pbw"><div class="pb" style="width:${pct}%"></div></div></div>`;
     }).join('');
-  } else {
-    // Desktop grid layout
-    el.innerHTML=ranked.map((c,i)=>{
-      const r=i+1,bc=r===1?'r1':r===2?'r2':r===3?'r3':'ro';
-      const pct=mx>0?Math.round(c.st.total/mx*100):0;
-      return`<div class="sr">
-        <div class="rb ${bc}">${r}</div>
-        <div class="cn">${c.name}</div>
-        <div class="sc">${c.st.goals}</div>
-        <div class="sc">${c.st.assists}</div>
-        <div class="sc">${c.st.pim}</div>
-        <div class="sc-g">${c.st.wins}</div>
-        <div class="sc-g">${c.st.shutouts}</div>
-        <div class="tc">${c.st.total.toFixed(1)}</div>
-        <div class="pbw"><div class="pb" style="width:${pct}%"></div></div>
-      </div>`;
+  }else{
+    el.innerHTML=ranked.map((c,i)=>{const r=i+1,bc=r===1?'r1':r===2?'r2':r===3?'r3':'ro',pct=mx>0?Math.round(c.st.total/mx*100):0;
+      return`<div class="sr"><div class="rb ${bc}">${r}</div><div class="cn">${c.name}</div><div class="sc">${c.st.goals}</div><div class="sc">${c.st.assists}</div><div class="sc">${c.st.pim}</div><div class="sc-g">${c.st.wins}</div><div class="sc-g">${c.st.shutouts}</div><div class="tc">${c.st.total.toFixed(1)}</div><div class="pbw"><div class="pb" style="width:${pct}%"></div></div></div>`;
     }).join('');
   }
 }
 
-/* ── PICKS — desktop table ── */
 function renderPicks(){
   const th=document.getElementById('pthead'),tb=document.getElementById('ptbody');
   const gids=GROUPS.map(g=>g.id);
   th.innerHTML=`<tr><th class="cth">Name</th>${gids.map(id=>`<th class="gth gh">G${id}</th>`).join('')}<th class="tth">Pts</th></tr>`;
-  if(!S.contestants.length){
-    tb.innerHTML=`<tr><td colspan="${gids.length+2}" style="text-align:center;padding:28px;color:var(--text-dim);font-family:'Barlow Condensed';letter-spacing:2px;">No contestants yet</td></tr>`;
-    return;
-  }
-  const ranked=[...S.contestants].sort((a,b)=>gcs(b).total-gcs(a).total);
+  const ranked=[...CONTESTANTS].sort((a,b)=>gcs(b).total-gcs(a).total);
   tb.innerHTML=ranked.map(c=>{
     const tot=gcs(c).total;
-    const cells=gids.map(gid=>{
-      const n=(c.picks||{})[gid];
-      if(!n)return`<td><div class="pc"><div class="pn" style="color:var(--text-dim)">—</div></div></td>`;
+    const cells=gids.map(gid=>{const n=(c.picks||{})[gid];if(!n)return`<td><div class="pc"><div class="pn" style="color:var(--text-dim)">—</div></div></td>`;
       const info=PM[n]||{},pts=gpp(n),el=isElim(info.team);
-      return`<td class="${el?'elim':''}"><div class="pc">
-        <div class="pn">${sn(n)}</div>
-        <div class="pt2">${info.team||''}</div>
-        <div class="pp">${pts>0?pts.toFixed(1):''}</div>
-      </div></td>`;
+      return`<td class="${el?'elim':''}"><div class="pc"><div class="pn">${sn(n)}</div><div class="pt2">${info.team||''}</div><div class="pp">${pts>0?pts.toFixed(1):''}</div></div></td>`;
     }).join('');
     return`<tr><td class="cc">${c.name}</td>${cells}<td class="tc2">${tot.toFixed(1)}</td></tr>`;
   }).join('');
-
-  // Also render mob picks if on mobile
-  if(isMobile()) renderMobPicks();
 }
 
-/* ── PICKS — mobile view ── */
-function syncMobPicksSelector(){
+function syncMobPicks(){
   const sel=document.getElementById('mob-contestant-pick');
   const prev=sel.value;
-  sel.innerHTML='<option value="">— select contestant —</option>'+
-    [...S.contestants]
-      .sort((a,b)=>gcs(b).total-gcs(a).total)
-      .map(c=>`<option value="${c.name}"${c.name===prev?' selected':''}>${c.name}</option>`)
-      .join('');
-  // Show/hide mobile UI
+  const ranked=[...CONTESTANTS].sort((a,b)=>gcs(b).total-gcs(a).total);
+  sel.innerHTML='<option value="">— select contestant —</option>'+ranked.map(c=>`<option value="${c.name}"${c.name===prev?' selected':''}>${c.name}</option>`).join('');
   const msel=document.querySelector('.mob-picks-selector');
-  const mhdr=document.getElementById('mob-contestant-header');
-  const mlist=document.getElementById('mob-pick-list');
-  if(isMobile()){
-    msel.style.display='flex';
-    renderMobPicks();
-  } else {
-    msel.style.display='none';
-    mhdr.style.display='none';
-    mlist.style.display='none';
-  }
+  if(mob()){msel.style.display='flex';renderMobPicks();}
+  else{msel.style.display='none';document.getElementById('mob-contestant-header').style.display='none';document.getElementById('mob-pick-list').style.display='none';}
 }
 
 function renderMobPicks(){
-  const hdr=document.getElementById('mob-contestant-header');
-  const list=document.getElementById('mob-pick-list');
+  const hdr=document.getElementById('mob-contestant-header'),list=document.getElementById('mob-pick-list');
   const cName=document.getElementById('mob-contestant-pick').value;
-
-  if(!cName){
-    hdr.style.display='none';
-    list.style.display='none';
-    return;
-  }
-
-  const c=S.contestants.find(x=>x.name===cName);
-  if(!c){hdr.style.display='none';list.style.display='none';return;}
-
+  if(!cName){hdr.style.display='none';list.style.display='none';return;}
+  const c=CONTESTANTS.find(x=>x.name===cName);if(!c){hdr.style.display='none';list.style.display='none';return;}
   const st=gcs(c);
-
-  // Header
   hdr.style.display='flex';
-  hdr.innerHTML=`
-    <div>
-      <div class="mob-contestant-name">${c.name}</div>
-      <div style="font-family:'Barlow Condensed';font-size:13px;color:var(--text-dim);letter-spacing:1px;margin-top:2px;">
-        ${st.goals}G · ${st.assists}A · ${st.pim} PIM · ${st.wins}W · ${st.shutouts} SO
-      </div>
-    </div>
-    <div style="text-align:right;">
-      <div class="mob-contestant-pts">${st.total.toFixed(1)}</div>
-      <div class="mob-contestant-pts-label">total pts</div>
-    </div>`;
-
-  // Pick rows
+  hdr.innerHTML=`<div><div class="mob-contestant-name">${c.name}</div><div style="font-family:'Barlow Condensed';font-size:13px;color:var(--text-dim);letter-spacing:1px;margin-top:2px;">${st.goals}G · ${st.assists}A · ${st.pim} PIM · ${st.wins}W · ${st.shutouts} SO</div></div><div style="text-align:right;"><div class="mob-contestant-pts">${st.total.toFixed(1)}</div><div class="mob-contestant-pts-label">total pts</div></div>`;
   list.style.display='flex';
   list.innerHTML=GROUPS.map(g=>{
     const pName=(c.picks||{})[g.id];
-    if(!pName){
-      return`<div class="mob-pick-row" style="opacity:.4;">
-        <div class="mob-pick-group">G${g.id}</div>
-        <div class="mob-pick-info">
-          <div class="mob-pick-name" style="color:var(--text-dim);font-size:15px;">No pick</div>
-        </div>
-        <div class="mob-pick-pts" style="color:var(--text-dim);">—</div>
-      </div>`;
-    }
-    const info=PM[pName]||{};
-    const ps=gps(pName);
-    const pts=gpp(pName);
-    const el=isElim(info.team);
-
-    let statsLine='';
-    if(info.type==='goalie'){
-      statsLine=`W: <b>${ps.wins}</b> · SO: <b>${ps.shutouts}</b>`;
-    } else {
-      statsLine=`G: <b>${ps.goals}</b> · A: <b>${ps.assists}</b> · PIM: <b>${ps.pim}</b>`;
-    }
-
-    return`<div class="mob-pick-row ${el?'mob-elim':''}">
-      <div class="mob-pick-group">G${g.id}</div>
-      <div class="mob-pick-info">
-        <div class="mob-pick-name">${pName}</div>
-        <div class="mob-pick-team">${info.team||''}${el?' · ELIM':''}${info.type==='goalie'?' · 🥅':''}</div>
-        <div class="mob-pick-stats">${statsLine}</div>
-      </div>
-      <div class="mob-pick-pts">${pts>0?pts.toFixed(1):'—'}</div>
-    </div>`;
+    if(!pName)return`<div class="mob-pick-row" style="opacity:.4;"><div class="mob-pick-group">G${g.id}</div><div class="mob-pick-info"><div class="mob-pick-name" style="color:var(--text-dim);font-size:15px;">No pick</div></div><div class="mob-pick-pts" style="color:var(--text-dim);">—</div></div>`;
+    const info=PM[pName]||{},ps=gps(pName),pts=gpp(pName),el=isElim(info.team);
+    const sl=info.type==='goalie'?`W: <b>${ps.wins}</b> · SO: <b>${ps.shutouts}</b>`:`G: <b>${ps.goals}</b> · A: <b>${ps.assists}</b> · PIM: <b>${ps.pim}</b>`;
+    return`<div class="mob-pick-row ${el?'mob-elim':''}"><div class="mob-pick-group">G${g.id}</div><div class="mob-pick-info"><div class="mob-pick-name">${pName}</div><div class="mob-pick-team">${info.team||''}${el?' · ELIM':''}${info.type==='goalie'?' 🥅':''}</div><div class="mob-pick-stats">${sl}</div></div><div class="mob-pick-pts">${pts>0?pts.toFixed(1):'—'}</div></div>`;
   }).join('');
 }
 
-/* ── PLAYERS ── */
 function renderPlayers(){
-  const el=document.getElementById('plist');
-  let h='';
+  const el=document.getElementById('plist');let h='';
   GROUPS.forEach(g=>{
     h+=`<div class="gl">Group ${g.id}</div><div class="pgrid">`;
     g.players.forEach(p=>{
-      const ps=gps(p.name),pts=gpp(p.name),el2=isElim(p.team),ovr=!!S.overrides[p.name];
-      const st=p.type==='goalie'
-        ?`<span>W: <b>${ps.wins}</b></span><span>SO: <b>${ps.shutouts}</b></span>`
-        :`<span>G: <b>${ps.goals}</b></span><span>A: <b>${ps.assists}</b></span><span>PIM: <b>${ps.pim}</b></span>`;
-      h+=`<div class="card ${el2?'elim2':''}">
-        <div class="ct">${p.team}${el2?' ELIM':''}${ovr?' OVR':''}</div>
-        <div><span class="cpts">${pts.toFixed(1)}</span><div class="cna">${p.name}</div></div>
-        <div class="cst">${st}</div>
-      </div>`;
+      const ps=gps(p.name),pts=gpp(p.name),e2=isElim(p.team),ovr=!!S.overrides[p.name];
+      const st=p.type==='goalie'?`<span>W: <b>${ps.wins}</b></span><span>SO: <b>${ps.shutouts}</b></span>`:`<span>G: <b>${ps.goals}</b></span><span>A: <b>${ps.assists}</b></span><span>PIM: <b>${ps.pim}</b></span>`;
+      h+=`<div class="card ${e2?'elim2':''}"><div class="ct">${p.team}${e2?' · ELIM':''}${ovr?' · OVR':''}</div><div><span class="cpts">${pts.toFixed(1)}</span><div class="cna">${p.name}</div></div><div class="cst">${st}</div></div>`;
     });
     h+='</div>';
   });
   el.innerHTML=h;
 }
 
-/* ── ADMIN LISTS ── */
-function renderAdminLists(){
+function renderAdminPanel(){
   if(!unlocked)return;
-  const cl=document.getElementById('cli');
-  cl.innerHTML=S.contestants.length
-    ?S.contestants.map(c=>`<div class="citem"><span class="cin">${c.name}</span>
-        <button class="btn bd bsm" onclick="removeC('${c.name.replace(/'/g,"\\'")}')">Remove</button></div>`).join('')
-    :'<div style="color:var(--text-dim);font-size:14px;font-family:\'Barlow Condensed\'">No contestants.</div>';
-  const cs=document.getElementById('pcsel');const pv=cs.value;
-  cs.innerHTML='<option value="">— choose contestant —</option>'+S.contestants.map(c=>`<option value="${c.name}"${c.name===pv?' selected':''}>${c.name}</option>`).join('');
+  document.getElementById('tel').innerHTML=ALL_TEAMS.map(t=>`<div class="tc3 ${isElim(t)?'elim3':''}">${t}</div>`).join('');
   const sp=document.getElementById('spsel');const spv=sp.value;
   sp.innerHTML='<option value="">— choose player —</option>'+GROUPS.map(g=>`<optgroup label="Group ${g.id}">${g.players.map(p=>`<option value="${p.name}"${p.name===spv?' selected':''}>${p.name} (${p.team})${p.type==='goalie'?' 🥅':''}</option>`).join('')}</optgroup>`).join('');
-  document.getElementById('tel').innerHTML=ALL_TEAMS.map(t=>`<div class="tc3 ${isElim(t)?'elim3':''}" onclick="toggleTeam('${t}')">${t}</div>`).join('');
 }
 
-// ══════════════════════════════════════════
-//  ADMIN LOCK
-// ══════════════════════════════════════════
 function checkPin(){
   const v=document.getElementById('piinput').value;
-  if(v===S.pin){
-    unlocked=true;
-    document.getElementById('als').style.display='none';
-    document.getElementById('apanel').style.display='block';
-    document.getElementById('pe').textContent='';
-    document.getElementById('piinput').value='';
-    renderAdminLists();
-  }else{
-    document.getElementById('pe').textContent='Incorrect PIN. Try again.';
-    document.getElementById('piinput').value='';
-  }
+  if(v===ADMIN_PIN){unlocked=true;document.getElementById('als').style.display='none';document.getElementById('apanel').style.display='block';document.getElementById('pe').textContent='';document.getElementById('piinput').value='';renderAdminPanel();}
+  else{document.getElementById('pe').textContent='Incorrect password. Try again.';document.getElementById('piinput').value='';}
 }
-function lockAdmin(){
-  unlocked=false;
-  document.getElementById('als').style.display='flex';
-  document.getElementById('apanel').style.display='none';
-  toast('Admin locked.');
-}
-function changePin(){
-  const o=document.getElementById('opin').value,n=document.getElementById('npin').value;
-  if(o!==S.pin)return toast('Current PIN incorrect.');
-  if(!/^\d{4,6}$/.test(n))return toast('New PIN must be 4-6 digits.');
-  S.pin=n;saveSt();
-  document.getElementById('opin').value='';document.getElementById('npin').value='';
-  toast('PIN updated!');
-}
+function lockAdmin(){unlocked=false;document.getElementById('als').style.display='flex';document.getElementById('apanel').style.display='none';toast('Admin locked.');}
 
-// ══════════════════════════════════════════
-//  ADMIN ACTIONS
-// ══════════════════════════════════════════
-function addC(){
-  const n=document.getElementById('ncname').value.trim();
-  if(!n)return toast('Enter a name!');
-  if(S.contestants.find(c=>c.name===n))return toast('Already exists!');
-  S.contestants.push({name:n,picks:{}});
-  document.getElementById('ncname').value='';
-  saveSt();renderAll();toast(`${n} added!`);
-}
-function removeC(name){
-  S.contestants=S.contestants.filter(c=>c.name!==name);
-  saveSt();renderAll();toast(`${name} removed.`);
-}
-function savePicks(){
-  const cn=document.getElementById('pcsel').value;
-  if(!cn)return toast('Select a contestant.');
-  const c=S.contestants.find(x=>x.name===cn);if(!c)return;
-  c.picks={};
-  GROUPS.forEach(g=>{const s=document.getElementById(`pg${g.id}`)?.value;if(s)c.picks[g.id]=s;});
-  saveSt();renderAll();toast(`Picks saved for ${cn}!`);
-}
-function renderPE(){
-  const area=document.getElementById('pea');
-  const cn=document.getElementById('pcsel').value;
-  if(!cn){area.innerHTML='';return;}
-  const c=S.contestants.find(x=>x.name===cn),picks=(c&&c.picks)||{};
-  area.innerHTML='<div class="peg">'+GROUPS.map(g=>{
-    const sel=picks[g.id]||'';
-    return`<div class="per"><label>Group ${g.id}</label><select id="pg${g.id}">
-      <option value="">— pick —</option>
-      ${g.players.map(p=>`<option value="${p.name}"${p.name===sel?' selected':''}>${p.name} (${p.team})</option>`).join('')}
-    </select></div>`;
-  }).join('')+'</div>';
-}
-function toggleTeam(t){
-  const i=S.elim.indexOf(t);if(i===-1)S.elim.push(t);else S.elim.splice(i,1);
-  saveSt();renderAll();toast(`${t} ${i===-1?'eliminated':'restored'}.`);
-}
 function prefillStats(){
   const n=document.getElementById('spsel').value,info=n?PM[n]:null,ps=n?gps(n):null;
-  if(info&&info.type==='goalie'){
-    document.getElementById('sl1').textContent='Wins';
-    document.getElementById('sl2').textContent='Shutouts';
-    document.getElementById('sl3').textContent='(N/A)';
-    document.getElementById('ss3').disabled=true;
-    if(ps){document.getElementById('ss1').value=ps.wins||0;document.getElementById('ss2').value=ps.shutouts||0;document.getElementById('ss3').value='';}
-  }else{
-    document.getElementById('sl1').textContent='Goals';
-    document.getElementById('sl2').textContent='Assists';
-    document.getElementById('sl3').textContent='PIM';
-    document.getElementById('ss3').disabled=false;
-    if(ps){document.getElementById('ss1').value=ps.goals||0;document.getElementById('ss2').value=ps.assists||0;document.getElementById('ss3').value=ps.pim||0;}
-  }
+  if(info&&info.type==='goalie'){document.getElementById('sl1').textContent='Wins';document.getElementById('sl2').textContent='Shutouts';document.getElementById('sl3').textContent='(N/A)';document.getElementById('ss3').disabled=true;if(ps){document.getElementById('ss1').value=ps.wins||0;document.getElementById('ss2').value=ps.shutouts||0;document.getElementById('ss3').value='';}}
+  else{document.getElementById('sl1').textContent='Goals';document.getElementById('sl2').textContent='Assists';document.getElementById('sl3').textContent='PIM';document.getElementById('ss3').disabled=false;if(ps){document.getElementById('ss1').value=ps.goals||0;document.getElementById('ss2').value=ps.assists||0;document.getElementById('ss3').value=ps.pim||0;}}
 }
 function manualStats(){
   const n=document.getElementById('spsel').value;if(!n)return toast('Select a player.');
-  const info=PM[n],s1=parseFloat(document.getElementById('ss1').value)||0,
-    s2=parseFloat(document.getElementById('ss2').value)||0,s3=parseFloat(document.getElementById('ss3').value)||0;
+  const info=PM[n],s1=parseFloat(document.getElementById('ss1').value)||0,s2=parseFloat(document.getElementById('ss2').value)||0,s3=parseFloat(document.getElementById('ss3').value)||0;
   S.overrides[n]=info.type==='goalie'?{wins:s1,shutouts:s2,goals:0,assists:0,pim:0}:{goals:s1,assists:s2,pim:s3,wins:0,shutouts:0};
   saveSt();renderAll();toast(`Override saved for ${n}.`);
 }
-function clearOvr(){
-  const n=document.getElementById('spsel').value;if(!n)return toast('Select a player.');
-  delete S.overrides[n];saveSt();renderAll();toast(`Override cleared — using live data.`);
-}
+function clearOvr(){const n=document.getElementById('spsel').value;if(!n)return toast('Select a player.');delete S.overrides[n];saveSt();renderAll();toast('Override cleared — using live data.');}
 
-// ══════════════════════════════════════════
-//  UI
-// ══════════════════════════════════════════
 function sn(name){const p=name.split(' ');return p.length<2?name:p[0][0]+'. '+p.slice(1).join(' ');}
-
 function sw(name){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   const tabs=['standings','picks','players','admin'];
   document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
   document.getElementById('tab-'+name).classList.add('active');
-  // Sync mobile picks UI when switching to picks
-  if(name==='picks') syncMobPicksSelector();
+  if(name==='picks')syncMobPicks();
 }
-
 let toastT;
-function toast(msg){
-  clearTimeout(toastT);
-  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
-  toastT=setTimeout(()=>t.classList.remove('show'),2800);
-}
+function toast(msg){clearTimeout(toastT);const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');toastT=setTimeout(()=>t.classList.remove('show'),2800);}
+let resizeT;
+window.addEventListener('resize',()=>{clearTimeout(resizeT);resizeT=setTimeout(()=>renderAll(),150);});
 
-// Re-render on resize (handles rotation between portrait/landscape)
-let resizeTimer;
-window.addEventListener('resize',()=>{
-  clearTimeout(resizeTimer);
-  resizeTimer=setTimeout(()=>renderAll(),150);
-});
-
-// ══════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════
 renderAll();
-if(S.lastSync) setSync('ok',`Last sync · ${S.lastSync}`);
+if(S.lastSync)setSync('ok',`Last sync · ${S.lastSync}`);
 syncNow();
 setInterval(syncNow,15*60*1000);
 </script>
