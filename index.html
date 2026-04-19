@@ -19,11 +19,8 @@ h1 span{color:var(--red-line);}
 .hsub{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:5px;color:var(--text-dim);text-transform:uppercase;margin-top:5px;}
 .sync-bar{display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0 0;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:1px;color:var(--text-dim);}
 .sdot{width:9px;height:9px;border-radius:50%;background:#555;transition:background .4s;}
-.sdot.syncing{background:var(--gold);animation:pulse 1s infinite;}
-.sdot.ok{background:#4caf50;}.sdot.err{background:var(--red-line);}
+.sdot.ok{background:#4caf50;}.sdot.err{background:var(--red-line);}.sdot.loading{background:var(--gold);animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
-.sync-btn{background:transparent;border:1px solid var(--blue-line);color:var(--blue-line);font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:3px;cursor:pointer;transition:all .2s;}
-.sync-btn:hover{background:var(--blue-line);color:white;}
 .tabs{display:flex;gap:3px;margin:26px 0 18px;border-bottom:1px solid var(--border);}
 .tab{font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;padding:9px 18px;cursor:pointer;color:var(--text-dim);border:1px solid transparent;border-bottom:none;border-radius:4px 4px 0 0;background:transparent;transition:all .2s;position:relative;bottom:-1px;user-select:none;-webkit-tap-highlight-color:transparent;}
 .tab:hover{color:var(--text-main);}
@@ -99,10 +96,15 @@ td.elim .pt2{color:#555;}td.elim .pp{color:#666;}
 .toast{position:fixed;bottom:22px;right:22px;background:var(--rink-light);border:1px solid var(--blue-line);border-radius:6px;padding:10px 18px;font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:1px;color:var(--text-main);z-index:200;opacity:0;transform:translateY(7px);transition:all .3s;pointer-events:none;}
 .toast.show{opacity:1;transform:translateY(0);}
 .empty{text-align:center;padding:45px 20px;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;font-size:17px;letter-spacing:2px;text-transform:uppercase;}
+.loading-overlay{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:16px;}
+.loading-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue-line);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;}
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:var(--rink);}
 ::-webkit-scrollbar-thumb{background:var(--rink-light);border-radius:3px;}
 
+/* ── MOBILE ─────────────────────────────────────────── */
 @media(max-width:768px){
   .container{padding:0 12px 100px;}
   header{padding:20px 0 14px;}
@@ -161,11 +163,10 @@ td.elim .pt2{color:#555;}td.elim .pp{color:#666;}
 <header>
   <div class="hbadge">2025 – 26 Season</div>
   <h1>NHL <span>Playoff</span> Pool</h1>
-  <div class="hsub">Live Stats · Auto-Updated</div>
+  <div class="hsub">Live Stats · Firebase Powered</div>
   <div class="sync-bar">
-    <div class="sdot" id="sdot"></div>
-    <span id="slabel">Initializing…</span>
-    <button class="sync-btn" onclick="syncNow()">↻ Sync Now</button>
+    <div class="sdot loading" id="sdot"></div>
+    <span id="slabel">Loading from database…</span>
   </div>
 </header>
 
@@ -176,15 +177,17 @@ td.elim .pt2{color:#555;}td.elim .pp{color:#666;}
   <div class="tab" onclick="sw('admin')"><span class="tab-icon">⚙️</span>Admin</div>
 </div>
 
+<!-- STANDINGS -->
 <div id="tab-standings" class="section active">
   <div class="sref">
     <div>Skaters: Goal <span>+3</span> · Assist <span>+2</span> · PIM <span>+0.5</span></div>
     <div>Goalies: Win <span>+3</span> · Shutout <span>+3</span></div>
   </div>
   <div class="sh"><div>#</div><div>Contestant</div><div style="text-align:center">G</div><div style="text-align:center">A</div><div style="text-align:center">PIM</div><div style="text-align:center">W</div><div style="text-align:center">SO</div><div style="text-align:center">Pts</div></div>
-  <div id="slist"></div>
+  <div id="slist"><div class="loading-overlay"><div class="loading-spinner"></div><div class="loading-text">Fetching standings…</div></div></div>
 </div>
 
+<!-- ALL PICKS -->
 <div id="tab-picks" class="section">
   <div class="notice"><strong>Note:</strong> Struck-through picks belong to eliminated teams and can no longer score.</div>
   <div class="mob-picks-selector"><label>View picks for</label><select id="mob-contestant-pick" onchange="renderMobPicks()"><option value="">— select contestant —</option></select></div>
@@ -193,11 +196,13 @@ td.elim .pt2{color:#555;}td.elim .pp{color:#666;}
   <div class="ptw"><table class="pt"><thead id="pthead"></thead><tbody id="ptbody"></tbody></table></div>
 </div>
 
+<!-- PLAYERS -->
 <div id="tab-players" class="section">
-  <div class="notice"><strong>Live:</strong> Stats and eliminations fetched automatically from the NHL API each sync.</div>
-  <div id="plist"></div>
+  <div class="notice"><strong>Stats source:</strong> Updated automatically every 30 minutes via GitHub Actions → Firebase. Last updated shown in header.</div>
+  <div id="plist"><div class="loading-overlay"><div class="loading-spinner"></div><div class="loading-text">Fetching player stats…</div></div></div>
 </div>
 
+<!-- ADMIN -->
 <div id="tab-admin" class="section">
   <div class="als" id="als">
     <h2>🔒 Admin Access</h2>
@@ -216,12 +221,12 @@ td.elim .pt2{color:#555;}td.elim .pp{color:#666;}
     <div class="agrid">
       <div class="ac">
         <h3>Eliminated Teams</h3>
-        <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">Auto-detected from the NHL playoff bracket API on each sync. Red = eliminated.</div>
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">Auto-detected from NHL playoff bracket. Updated every 30 min by GitHub Actions.</div>
         <div class="tel" id="tel"></div>
       </div>
       <div class="ac">
         <h3>Manual Stats Override</h3>
-        <div class="notice" style="margin-bottom:10px;font-size:11px;"><strong>Note:</strong> Use only if live API data is incorrect. Overrides live data until cleared.</div>
+        <div class="notice" style="margin-bottom:10px;font-size:11px;"><strong>Note:</strong> Writes directly to Firebase. Overrides the auto-updated value until cleared.</div>
         <div class="fr"><label>Player</label><select id="spsel" onchange="prefillStats()"><option value="">— choose player —</option></select></div>
         <div class="spgrid">
           <div class="fr"><label id="sl1">Goals/Wins</label><input type="number" id="ss1" min="0" placeholder="0"></div>
@@ -229,7 +234,7 @@ td.elim .pt2{color:#555;}td.elim .pp{color:#666;}
           <div class="fr"><label id="sl3">PIM</label><input type="number" id="ss3" min="0" placeholder="0"></div>
         </div>
         <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
-          <button class="btn bp" onclick="manualStats()">Save Override</button>
+          <button class="btn bp" onclick="manualStats()">Save to Firebase</button>
           <button class="btn bd bsm" onclick="clearOvr()">Clear Override</button>
         </div>
       </div>
@@ -239,23 +244,40 @@ td.elim .pt2{color:#555;}td.elim .pp{color:#666;}
 </div>
 <div class="toast" id="toast"></div>
 
-<script>
+<!-- Firebase SDKs (loaded as modules) -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+// ── Firebase config ───────────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyCIKaeca1oDf9g4O1Z-s_dseIhKci_DTKo",
+  authDomain: "nhl-playoff-pool-26.firebaseapp.com",
+  projectId: "nhl-playoff-pool-26",
+  storageBucket: "nhl-playoff-pool-26.firebasestorage.app",
+  messagingSenderId: "534289983577",
+  appId: "1:534289983577:web:c6d40e8f685109a063a948"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+// ── Pool data (picks hardcoded, stats come from Firebase) ─────────────────────
 const GROUPS=[
-  {id:1,players:[{name:"Nikita Kucherov",team:"TBL",type:"skater",id:8476453},{name:"Connor McDavid",team:"EDM",type:"skater",id:8478402},{name:"Nathan MacKinnon",team:"COL",type:"skater",id:8477492},{name:"Leon Draisaitl",team:"EDM",type:"skater",id:8477934}]},
-  {id:2,players:[{name:"David Pastrnak",team:"BOS",type:"skater",id:8477956},{name:"Martin Necas",team:"COL",type:"skater",id:8480762},{name:"Mikko Rantanen",team:"DAL",type:"skater",id:8478420},{name:"Jack Eichel",team:"VGK",type:"skater",id:8478403}]},
-  {id:3,players:[{name:"Nick Suzuki",team:"MTL",type:"skater",id:8480800},{name:"Mark Stone",team:"VGK",type:"skater",id:8475913},{name:"Jason Robertson",team:"DAL",type:"skater",id:8481528},{name:"Kirill Kaprizov",team:"MIN",type:"skater",id:8481600}]},
-  {id:4,players:[{name:"Matt Boldy",team:"MIN",type:"skater",id:8482109},{name:"Sidney Crosby",team:"PIT",type:"skater",id:8471675},{name:"Cole Caufield",team:"MTL",type:"skater",id:8481540},{name:"Jake Guentzel",team:"TBL",type:"skater",id:8477404}]},
-  {id:5,players:[{name:"Brandon Hagel",team:"TBL",type:"skater",id:8480801},{name:"Evgeni Malkin",team:"PIT",type:"skater",id:8471215},{name:"Clayton Keller",team:"UTA",type:"skater",id:8479343},{name:"Wyatt Johnston",team:"DAL",type:"skater",id:8483515}]},
-  {id:6,players:[{name:"Tage Thompson",team:"BUF",type:"skater",id:8480993},{name:"Sebastian Aho",team:"CAR",type:"skater",id:8478427},{name:"Brady Tkachuk",team:"OTT",type:"skater",id:8481528},{name:"Mitch Marner",team:"VGK",type:"skater",id:8478483}]},
-  {id:7,players:[{name:"Tim Stützle",team:"OTT",type:"skater",id:8482116},{name:"Artemi Panarin",team:"LAK",type:"skater",id:8478550},{name:"Leo Carlsson",team:"ANA",type:"skater",id:8484144},{name:"Travis Konecny",team:"PHI",type:"skater",id:8479365}]},
-  {id:8,players:[{name:"Dylan Guenther",team:"UTA",type:"skater",id:8483453},{name:"Andrei Svechnikov",team:"CAR",type:"skater",id:8480830},{name:"Zach Hyman",team:"EDM",type:"skater",id:8475786},{name:"Cutter Gauthier",team:"ANA",type:"skater",id:8484882}]},
-  {id:9,players:[{name:"Juraj Slafkovský",team:"MTL",type:"skater",id:8484145},{name:"Adrian Kempe",team:"LAK",type:"skater",id:8477960},{name:"Seth Jarvis",team:"CAR",type:"skater",id:8482655},{name:"Alex Tuch",team:"BUF",type:"skater",id:8478450}]},
-  {id:10,players:[{name:"Porter Martone",team:"PHI",type:"skater",id:8487950},{name:"Nick Schmaltz",team:"UTA",type:"skater",id:8478057},{name:"Drake Batherson",team:"OTT",type:"skater",id:8481533},{name:"Morgan Geekie",team:"BOS",type:"skater",id:8478476}]},
-  {id:11,players:[{name:"Cale Makar",team:"COL",type:"skater",id:8480069},{name:"Evan Bouchard",team:"EDM",type:"skater",id:8480144},{name:"Quinn Hughes",team:"VAN",type:"skater",id:8480800},{name:"Rasmus Dahlin",team:"BUF",type:"skater",id:8480769}]},
-  {id:12,players:[{name:"Lane Hutson",team:"MTL",type:"skater",id:8487947},{name:"Darren Raddysh",team:"TBL",type:"skater",id:8478438},{name:"Shayne Gostisbehere",team:"CAR",type:"skater",id:8477494},{name:"Erik Karlsson",team:"PIT",type:"skater",id:8474578}]},
-  {id:13,players:[{name:"Charlie McAvoy",team:"BOS",type:"skater",id:8479325},{name:"John Carlson",team:"ANA",type:"skater",id:8474270},{name:"Jake Sanderson",team:"OTT",type:"skater",id:8483411},{name:"Miro Heiskanen",team:"DAL",type:"skater",id:8481522}]},
-  {id:14,players:[{name:"Scott Wedgewood",team:"COL",type:"goalie",id:8476419},{name:"Jake Oettinger",team:"DAL",type:"goalie",id:8480382},{name:"Andrei Vasilevskiy",team:"TBL",type:"goalie",id:8476883},{name:"Ukko-Pekka Luukkonen",team:"BUF",type:"goalie",id:8481533}]},
-  {id:15,players:[{name:"Karel Vejmelka",team:"UTA",type:"goalie",id:8480353},{name:"Carter Hart",team:"VGK",type:"goalie",id:8479361},{name:"Linus Ullmark",team:"OTT",type:"goalie",id:8476945},{name:"Stuart Skinner",team:"PIT",type:"goalie",id:8480407}]},
+  {id:1,players:[{name:"Nikita Kucherov",team:"TBL",type:"skater"},{name:"Connor McDavid",team:"EDM",type:"skater"},{name:"Nathan MacKinnon",team:"COL",type:"skater"},{name:"Leon Draisaitl",team:"EDM",type:"skater"}]},
+  {id:2,players:[{name:"David Pastrnak",team:"BOS",type:"skater"},{name:"Martin Necas",team:"COL",type:"skater"},{name:"Mikko Rantanen",team:"DAL",type:"skater"},{name:"Jack Eichel",team:"VGK",type:"skater"}]},
+  {id:3,players:[{name:"Nick Suzuki",team:"MTL",type:"skater"},{name:"Mark Stone",team:"VGK",type:"skater"},{name:"Jason Robertson",team:"DAL",type:"skater"},{name:"Kirill Kaprizov",team:"MIN",type:"skater"}]},
+  {id:4,players:[{name:"Matt Boldy",team:"MIN",type:"skater"},{name:"Sidney Crosby",team:"PIT",type:"skater"},{name:"Cole Caufield",team:"MTL",type:"skater"},{name:"Jake Guentzel",team:"TBL",type:"skater"}]},
+  {id:5,players:[{name:"Brandon Hagel",team:"TBL",type:"skater"},{name:"Evgeni Malkin",team:"PIT",type:"skater"},{name:"Clayton Keller",team:"UTA",type:"skater"},{name:"Wyatt Johnston",team:"DAL",type:"skater"}]},
+  {id:6,players:[{name:"Tage Thompson",team:"BUF",type:"skater"},{name:"Sebastian Aho",team:"CAR",type:"skater"},{name:"Brady Tkachuk",team:"OTT",type:"skater"},{name:"Mitch Marner",team:"VGK",type:"skater"}]},
+  {id:7,players:[{name:"Tim Stützle",team:"OTT",type:"skater"},{name:"Artemi Panarin",team:"LAK",type:"skater"},{name:"Leo Carlsson",team:"ANA",type:"skater"},{name:"Travis Konecny",team:"PHI",type:"skater"}]},
+  {id:8,players:[{name:"Dylan Guenther",team:"UTA",type:"skater"},{name:"Andrei Svechnikov",team:"CAR",type:"skater"},{name:"Zach Hyman",team:"EDM",type:"skater"},{name:"Cutter Gauthier",team:"ANA",type:"skater"}]},
+  {id:9,players:[{name:"Juraj Slafkovský",team:"MTL",type:"skater"},{name:"Adrian Kempe",team:"LAK",type:"skater"},{name:"Seth Jarvis",team:"CAR",type:"skater"},{name:"Alex Tuch",team:"BUF",type:"skater"}]},
+  {id:10,players:[{name:"Porter Martone",team:"PHI",type:"skater"},{name:"Nick Schmaltz",team:"UTA",type:"skater"},{name:"Drake Batherson",team:"OTT",type:"skater"},{name:"Morgan Geekie",team:"BOS",type:"skater"}]},
+  {id:11,players:[{name:"Cale Makar",team:"COL",type:"skater"},{name:"Evan Bouchard",team:"EDM",type:"skater"},{name:"Quinn Hughes",team:"VAN",type:"skater"},{name:"Rasmus Dahlin",team:"BUF",type:"skater"}]},
+  {id:12,players:[{name:"Lane Hutson",team:"MTL",type:"skater"},{name:"Darren Raddysh",team:"TBL",type:"skater"},{name:"Shayne Gostisbehere",team:"CAR",type:"skater"},{name:"Erik Karlsson",team:"PIT",type:"skater"}]},
+  {id:13,players:[{name:"Charlie McAvoy",team:"BOS",type:"skater"},{name:"John Carlson",team:"ANA",type:"skater"},{name:"Jake Sanderson",team:"OTT",type:"skater"},{name:"Miro Heiskanen",team:"DAL",type:"skater"}]},
+  {id:14,players:[{name:"Scott Wedgewood",team:"COL",type:"goalie"},{name:"Jake Oettinger",team:"DAL",type:"goalie"},{name:"Andrei Vasilevskiy",team:"TBL",type:"goalie"},{name:"Ukko-Pekka Luukkonen",team:"BUF",type:"goalie"}]},
+  {id:15,players:[{name:"Karel Vejmelka",team:"UTA",type:"goalie"},{name:"Carter Hart",team:"VGK",type:"goalie"},{name:"Linus Ullmark",team:"OTT",type:"goalie"},{name:"Stuart Skinner",team:"PIT",type:"goalie"}]},
 ];
 
 const CONTESTANTS=[
@@ -273,77 +295,65 @@ const CONTESTANTS=[
 const ALL_TEAMS=[...new Set(GROUPS.flatMap(g=>g.players.map(p=>p.team)))].sort();
 const PM={};GROUPS.forEach(g=>g.players.forEach(p=>{PM[p.name]=p;}));
 
-function loadSt(){try{const s=localStorage.getItem('nhl_pool_v4');if(s)return JSON.parse(s);}catch(e){}return{live:{},overrides:{},elim:[],lastSync:null};}
-function saveSt(){localStorage.setItem('nhl_pool_v4',JSON.stringify(S));}
-let S=loadSt();
-let unlocked=false;
 const ADMIN_PIN='1996';
-const SEASON='20252026',GT=3;
+let unlocked=false;
 
-async function proxyFetch(url){
-  const r=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-  const j=await r.json();return JSON.parse(j.contents);
+// ── Live data from Firebase ───────────────────────────────────────────────────
+let liveStats={};        // { playerName: { goals, assists, pim, wins, shutouts } }
+let elimTeams=[];        // [ "TBL", "BUF", ... ]
+let overrides={};        // { playerName: { ... } } — admin manual overrides stored in Firebase
+let lastUpdated='';
+
+// ── Subscribe to Firestore — updates page automatically whenever backend writes ─
+const statsRef  = doc(db,'pool','stats');
+const overrideRef = doc(db,'pool','overrides');
+
+onSnapshot(statsRef, snap => {
+  if(!snap.exists()) return;
+  const data = snap.data();
+  liveStats    = data.players        || {};
+  elimTeams    = data.eliminatedTeams|| [];
+  lastUpdated  = data.lastUpdated    || '';
+  const d = lastUpdated ? new Date(lastUpdated) : null;
+  const label = d ? `Updated ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} · ${d.toLocaleDateString([],{month:'short',day:'numeric'})}` : 'Connected to Firebase';
+  document.getElementById('sdot').className  = 'sdot ok';
+  document.getElementById('slabel').textContent = label;
+  renderAll();
+}, err => {
+  console.error('Firestore error:', err);
+  document.getElementById('sdot').className  = 'sdot err';
+  document.getElementById('slabel').textContent = 'Database error — check console';
+});
+
+onSnapshot(overrideRef, snap => {
+  overrides = snap.exists() ? (snap.data().players || {}) : {};
+  renderAll();
+});
+
+// ── Scoring ───────────────────────────────────────────────────────────────────
+function gps(name){
+  const base=liveStats[name]||{goals:0,assists:0,pim:0,wins:0,shutouts:0};
+  return overrides[name]||base;
 }
-
-async function fetchPlayoffEliminations(){
-  try{
-    const data=await proxyFetch(`https://api-web.nhle.com/v1/playoff-bracket/2026`);
-    const elim=new Set();
-    const rounds=data?.rounds||data?.bracket?.rounds||[];
-    rounds.forEach(rd=>{
-      (rd.series||[]).forEach(s=>{
-        // A finished series will have a loser
-        if(s?.loser?.abbrev) elim.add(s.loser.abbrev);
-        // Also check if top/bottom seed has 4 wins
-        const tW=s?.topSeedWins??s?.topSeedSeriesWins??0;
-        const bW=s?.bottomSeedWins??s?.bottomSeedSeriesWins??0;
-        if(tW>=4&&s?.bottomSeed?.abbrev) elim.add(s.bottomSeed.abbrev);
-        if(bW>=4&&s?.topSeed?.abbrev) elim.add(s.topSeed.abbrev);
-      });
-    });
-    return[...elim];
-  }catch(e){console.warn('Bracket fetch failed',e);return S.elim||[];}
+function gpp(name){
+  const p=gps(name),i=PM[name];
+  if(!i)return 0;
+  return i.type==='goalie'?(p.wins||0)*3+(p.shutouts||0)*3:(p.goals||0)*3+(p.assists||0)*2+(p.pim||0)*.5;
 }
-
-async function syncNow(){
-  setSync('syncing','Fetching NHL API…');
-  try{
-    const[sk,gl,elim]=await Promise.all([
-      proxyFetch(`https://api.nhle.com/stats/rest/en/skater/summary?limit=500&sort=points&cayenneExp=seasonId=${SEASON}%20and%20gameTypeId=${GT}`),
-      proxyFetch(`https://api.nhle.com/stats/rest/en/goalie/summary?limit=200&sort=wins&cayenneExp=seasonId=${SEASON}%20and%20gameTypeId=${GT}`),
-      fetchPlayoffEliminations(),
-    ]);
-    let pimMap={};
-    try{const pd=await proxyFetch(`https://api.nhle.com/stats/rest/en/skater/penaltyShots?limit=500&sort=penaltyMinutes&cayenneExp=seasonId=${SEASON}%20and%20gameTypeId=${GT}`);
-      if(pd&&pd.data)pd.data.forEach(p=>{pimMap[norm(p.skaterFullName||'')]=p.penaltyMinutes||0;});}catch(e){}
-    const ns={};
-    if(sk&&sk.data)sk.data.forEach(p=>{const m=matchPlayer(p.skaterFullName||'','skater');if(m)ns[m.name]={goals:p.goals||0,assists:p.assists||0,pim:pimMap[norm(p.skaterFullName||'')]??p.penaltyMinutes??0,wins:0,shutouts:0};});
-    if(gl&&gl.data)gl.data.forEach(p=>{const m=matchPlayer(p.goalieFullName||'','goalie');if(m)ns[m.name]={wins:p.wins||0,shutouts:p.shutouts||0,goals:0,assists:0,pim:0};});
-    S.live=ns;S.elim=elim;S.lastSync=new Date().toLocaleTimeString();
-    saveSt();renderAll();setSync('ok',`Synced · ${S.lastSync}`);toast('Stats & eliminations updated ✓');
-  }catch(err){
-    console.warn('Sync error:',err);setSync('err','Sync failed — using cached data');toast('API sync failed. Cached data shown.');
-  }
+function gcs(c){
+  let g=0,a=0,pim=0,w=0,so=0,tot=0;
+  Object.values(c.picks||{}).forEach(n=>{
+    if(!n)return;const ps=gps(n),i=PM[n];if(!i)return;
+    if(i.type==='skater'){g+=ps.goals||0;a+=ps.assists||0;pim+=ps.pim||0;}
+    if(i.type==='goalie'){w+=ps.wins||0;so+=ps.shutouts||0;}
+    tot+=gpp(n);
+  });
+  return{goals:g,assists:a,pim,wins:w,shutouts:so,total:tot};
 }
-
-const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-function matchPlayer(apiName,type){
-  const a=norm(apiName);
-  for(const p of Object.values(PM)){
-    if(p.type!==type)continue;
-    if(norm(p.name)===a)return p;
-    const ap=a.split(' '),pp=norm(p.name).split(' ');
-    if(ap[ap.length-1]===pp[pp.length-1]&&ap[0][0]===pp[0][0])return p;
-  }return null;
-}
-function setSync(st,label){document.getElementById('sdot').className='sdot '+st;document.getElementById('slabel').textContent=label;}
-
-function gps(n){return S.overrides[n]||S.live[n]||{goals:0,assists:0,pim:0,wins:0,shutouts:0};}
-function gpp(n){const p=gps(n),i=PM[n];if(!i)return 0;return i.type==='goalie'?(p.wins||0)*3+(p.shutouts||0)*3:(p.goals||0)*3+(p.assists||0)*2+(p.pim||0)*.5;}
-function gcs(c){let g=0,a=0,pim=0,w=0,so=0,tot=0;Object.values(c.picks||{}).forEach(n=>{if(!n)return;const ps=gps(n),i=PM[n];if(!i)return;if(i.type==='skater'){g+=ps.goals||0;a+=ps.assists||0;pim+=ps.pim||0;}if(i.type==='goalie'){w+=ps.wins||0;so+=ps.shutouts||0;}tot+=gpp(n);});return{goals:g,assists:a,pim,wins:w,shutouts:so,total:tot};}
-function isElim(t){return S.elim.includes(t);}
+function isElim(t){return elimTeams.includes(t);}
 const mob=()=>window.innerWidth<=768;
 
+// ── Render ────────────────────────────────────────────────────────────────────
 function renderAll(){renderStandings();renderPicks();renderPlayers();renderAdminPanel();syncMobPicks();}
 
 function renderStandings(){
@@ -394,36 +404,33 @@ function syncMobPicks(){
   else{msel.style.display='none';document.getElementById('mob-contestant-header').style.display='none';document.getElementById('mob-pick-list').style.display='none';}
 }
 
-function renderMobPicks(){
+window.renderMobPicks=function(){
   const hdr=document.getElementById('mob-contestant-header'),list=document.getElementById('mob-pick-list');
   const cName=document.getElementById('mob-contestant-pick').value;
   if(!cName){hdr.style.display='none';list.style.display='none';return;}
   const c=CONTESTANTS.find(x=>x.name===cName);if(!c){hdr.style.display='none';list.style.display='none';return;}
   const st=gcs(c);
   hdr.style.display='flex';
-  hdr.innerHTML=`<div><div class="mob-contestant-name">${c.name}</div><div style="font-family:'Barlow Condensed';font-size:13px;color:var(--text-dim);letter-spacing:1px;margin-top:2px;">${st.goals}G · ${st.assists}A · ${st.pim} PIM · ${st.wins}W · ${st.shutouts} SO</div></div><div style="text-align:right;"><div class="mob-contestant-pts">${st.total.toFixed(1)}</div><div class="mob-contestant-pts-label">total pts</div></div>`;
+  hdr.innerHTML=`<div><div class="mob-contestant-name">${c.name}</div><div style="font-family:'Barlow Condensed';font-size:13px;color:var(--text-dim);letter-spacing:1px;margin-top:2px;">${st.goals}G · ${st.assists}A · ${st.pim}PIM · ${st.wins}W · ${st.shutouts}SO</div></div><div style="text-align:right;"><div class="mob-contestant-pts">${st.total.toFixed(1)}</div><div class="mob-contestant-pts-label">total pts</div></div>`;
   list.style.display='flex';
   list.innerHTML=GROUPS.map(g=>{
-    const pName=(c.picks||{})[g.id];
-    if(!pName)return`<div class="mob-pick-row" style="opacity:.4;"><div class="mob-pick-group">G${g.id}</div><div class="mob-pick-info"><div class="mob-pick-name" style="color:var(--text-dim);font-size:15px;">No pick</div></div><div class="mob-pick-pts" style="color:var(--text-dim);">—</div></div>`;
+    const pName=(c.picks||{})[g.id];if(!pName)return`<div class="mob-pick-row" style="opacity:.4;"><div class="mob-pick-group">G${g.id}</div><div class="mob-pick-info"><div class="mob-pick-name" style="color:var(--text-dim);font-size:15px;">No pick</div></div><div class="mob-pick-pts" style="color:var(--text-dim);">—</div></div>`;
     const info=PM[pName]||{},ps=gps(pName),pts=gpp(pName),el=isElim(info.team);
     const sl=info.type==='goalie'?`W: <b>${ps.wins}</b> · SO: <b>${ps.shutouts}</b>`:`G: <b>${ps.goals}</b> · A: <b>${ps.assists}</b> · PIM: <b>${ps.pim}</b>`;
     return`<div class="mob-pick-row ${el?'mob-elim':''}"><div class="mob-pick-group">G${g.id}</div><div class="mob-pick-info"><div class="mob-pick-name">${pName}</div><div class="mob-pick-team">${info.team||''}${el?' · ELIM':''}${info.type==='goalie'?' 🥅':''}</div><div class="mob-pick-stats">${sl}</div></div><div class="mob-pick-pts">${pts>0?pts.toFixed(1):'—'}</div></div>`;
   }).join('');
-}
+};
 
 function renderPlayers(){
   const el=document.getElementById('plist');let h='';
   GROUPS.forEach(g=>{
     h+=`<div class="gl">Group ${g.id}</div><div class="pgrid">`;
     g.players.forEach(p=>{
-      const ps=gps(p.name),pts=gpp(p.name),e2=isElim(p.team),ovr=!!S.overrides[p.name];
+      const ps=gps(p.name),pts=gpp(p.name),e2=isElim(p.team),ovr=!!overrides[p.name];
       const st=p.type==='goalie'?`<span>W: <b>${ps.wins}</b></span><span>SO: <b>${ps.shutouts}</b></span>`:`<span>G: <b>${ps.goals}</b></span><span>A: <b>${ps.assists}</b></span><span>PIM: <b>${ps.pim}</b></span>`;
       h+=`<div class="card ${e2?'elim2':''}"><div class="ct">${p.team}${e2?' · ELIM':''}${ovr?' · OVR':''}</div><div><span class="cpts">${pts.toFixed(1)}</span><div class="cna">${p.name}</div></div><div class="cst">${st}</div></div>`;
-    });
-    h+='</div>';
-  });
-  el.innerHTML=h;
+    });h+='</div>';
+  });el.innerHTML=h;
 }
 
 function renderAdminPanel(){
@@ -433,44 +440,52 @@ function renderAdminPanel(){
   sp.innerHTML='<option value="">— choose player —</option>'+GROUPS.map(g=>`<optgroup label="Group ${g.id}">${g.players.map(p=>`<option value="${p.name}"${p.name===spv?' selected':''}>${p.name} (${p.team})${p.type==='goalie'?' 🥅':''}</option>`).join('')}</optgroup>`).join('');
 }
 
-function checkPin(){
+// ── Admin auth ────────────────────────────────────────────────────────────────
+window.checkPin=function(){
   const v=document.getElementById('piinput').value;
   if(v===ADMIN_PIN){unlocked=true;document.getElementById('als').style.display='none';document.getElementById('apanel').style.display='block';document.getElementById('pe').textContent='';document.getElementById('piinput').value='';renderAdminPanel();}
   else{document.getElementById('pe').textContent='Incorrect password. Try again.';document.getElementById('piinput').value='';}
-}
-function lockAdmin(){unlocked=false;document.getElementById('als').style.display='flex';document.getElementById('apanel').style.display='none';toast('Admin locked.');}
+};
+window.lockAdmin=function(){unlocked=false;document.getElementById('als').style.display='flex';document.getElementById('apanel').style.display='none';toast('Admin locked.');};
 
-function prefillStats(){
+// ── Manual override — writes to Firebase ─────────────────────────────────────
+window.prefillStats=function(){
   const n=document.getElementById('spsel').value,info=n?PM[n]:null,ps=n?gps(n):null;
   if(info&&info.type==='goalie'){document.getElementById('sl1').textContent='Wins';document.getElementById('sl2').textContent='Shutouts';document.getElementById('sl3').textContent='(N/A)';document.getElementById('ss3').disabled=true;if(ps){document.getElementById('ss1').value=ps.wins||0;document.getElementById('ss2').value=ps.shutouts||0;document.getElementById('ss3').value='';}}
   else{document.getElementById('sl1').textContent='Goals';document.getElementById('sl2').textContent='Assists';document.getElementById('sl3').textContent='PIM';document.getElementById('ss3').disabled=false;if(ps){document.getElementById('ss1').value=ps.goals||0;document.getElementById('ss2').value=ps.assists||0;document.getElementById('ss3').value=ps.pim||0;}}
-}
-function manualStats(){
+};
+
+window.manualStats=async function(){
   const n=document.getElementById('spsel').value;if(!n)return toast('Select a player.');
   const info=PM[n],s1=parseFloat(document.getElementById('ss1').value)||0,s2=parseFloat(document.getElementById('ss2').value)||0,s3=parseFloat(document.getElementById('ss3').value)||0;
-  S.overrides[n]=info.type==='goalie'?{wins:s1,shutouts:s2,goals:0,assists:0,pim:0}:{goals:s1,assists:s2,pim:s3,wins:0,shutouts:0};
-  saveSt();renderAll();toast(`Override saved for ${n}.`);
-}
-function clearOvr(){const n=document.getElementById('spsel').value;if(!n)return toast('Select a player.');delete S.overrides[n];saveSt();renderAll();toast('Override cleared — using live data.');}
+  const val=info.type==='goalie'?{wins:s1,shutouts:s2,goals:0,assists:0,pim:0}:{goals:s1,assists:s2,pim:s3,wins:0,shutouts:0};
+  const current=overrides;current[n]=val;
+  await setDoc(overrideRef,{players:current});
+  toast(`Override saved for ${n} in Firebase.`);
+};
 
+window.clearOvr=async function(){
+  const n=document.getElementById('spsel').value;if(!n)return toast('Select a player.');
+  const current={...overrides};delete current[n];
+  await setDoc(overrideRef,{players:current});
+  toast('Override cleared — live stats will resume.');
+};
+
+// ── UI helpers ────────────────────────────────────────────────────────────────
 function sn(name){const p=name.split(' ');return p.length<2?name:p[0][0]+'. '+p.slice(1).join(' ');}
-function sw(name){
+window.sw=function(name){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   const tabs=['standings','picks','players','admin'];
   document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
   document.getElementById('tab-'+name).classList.add('active');
   if(name==='picks')syncMobPicks();
-}
+};
 let toastT;
 function toast(msg){clearTimeout(toastT);const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');toastT=setTimeout(()=>t.classList.remove('show'),2800);}
 let resizeT;
 window.addEventListener('resize',()=>{clearTimeout(resizeT);resizeT=setTimeout(()=>renderAll(),150);});
 
-renderAll();
-if(S.lastSync)setSync('ok',`Last sync · ${S.lastSync}`);
-syncNow();
-setInterval(syncNow,15*60*1000);
 </script>
 </body>
 </html>
