@@ -2,9 +2,17 @@ name: Update NHL Pool Stats
 
 on:
   schedule:
-    # Runs every 30 minutes
-    - cron: '*/30 * * * *'
-  # Also allows manual trigger from the GitHub Actions tab
+    # All times are UTC — ET is UTC-4 during playoffs (EDT)
+    # 6:00 PM ET  = 22:00 UTC  (pre-game, catches afternoon games)
+    - cron: '0 22 * * *'
+    # 8:00 PM ET  = 00:00 UTC  (during early games)
+    - cron: '0 0 * * *'
+    # 9:30 PM ET  = 01:30 UTC  (mid-evening, catches west coast starts)
+    - cron: '30 1 * * *'
+    # 11:00 PM ET = 03:00 UTC  (late games / OT finishing up)
+    - cron: '0 3 * * *'
+    # 3:00 AM ET  = 07:00 UTC  (overnight cleanup run)
+    - cron: '0 7 * * *'
   workflow_dispatch:
 
 jobs:
