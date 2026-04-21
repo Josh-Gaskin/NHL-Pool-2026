@@ -29,8 +29,8 @@ h1 span{color:var(--red-line);}
 .section{display:none;}.section.active{display:block;}
 .sref{display:flex;gap:20px;flex-wrap:wrap;background:var(--rink-mid);border:1px solid var(--border);border-radius:6px;padding:11px 16px;margin-bottom:18px;font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:1px;color:var(--text-dim);}
 .sref span{color:var(--text-main);font-weight:700;}
-.sh{display:grid;grid-template-columns:46px 1fr 58px 58px 62px 58px 58px 90px;gap:4px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid var(--border);}
-.sr{display:grid;grid-template-columns:46px 1fr 58px 58px 62px 58px 58px 90px;gap:4px;align-items:center;padding:13px 14px;border-bottom:1px solid var(--border);transition:background .2s;border-radius:4px;}
+.sh{display:grid;grid-template-columns:46px 1fr 58px 58px 62px 58px 58px 72px 90px;gap:4px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid var(--border);}
+.sr{display:grid;grid-template-columns:46px 1fr 58px 58px 62px 58px 58px 72px 90px;gap:4px;align-items:center;padding:13px 14px;border-bottom:1px solid var(--border);transition:background .2s;border-radius:4px;}
 .sr:hover{background:rgba(255,255,255,.04);}
 .rb{font-family:'Bebas Neue',sans-serif;font-size:24px;text-align:center;}
 .r1{color:var(--gold);}.r2{color:var(--silver);}.r3{color:var(--bronze);}.ro{color:var(--text-dim);font-size:18px;}
@@ -38,6 +38,12 @@ h1 span{color:var(--red-line);}
 .sc{text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:17px;color:var(--text-dim);}
 .sc-g{text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:17px;color:#7ec8e3;}
 .tc{text-align:center;font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);}
+.rem{display:flex;align-items:center;justify-content:center;}
+.rem-pill{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;padding:3px 9px;border-radius:12px;border:1px solid;min-width:42px;text-align:center;}
+.rem-high{color:#4caf50;border-color:rgba(76,175,80,.4);background:rgba(76,175,80,.08);}
+.rem-mid{color:#ffb800;border-color:rgba(255,184,0,.4);background:rgba(255,184,0,.08);}
+.rem-low{color:#ff7043;border-color:rgba(255,112,67,.4);background:rgba(255,112,67,.08);}
+.rem-zero{color:#666;border-color:rgba(100,100,100,.3);background:rgba(100,100,100,.06);}
 .pbw{grid-column:1/-1;height:2px;background:rgba(255,255,255,.06);border-radius:1px;margin:-8px 0 2px;overflow:hidden;}
 .pb{height:100%;background:linear-gradient(90deg,var(--blue-line),var(--red-line));border-radius:1px;transition:width .8s ease;}
 .ptw{overflow-x:auto;}
@@ -183,7 +189,7 @@ td.elim .pt2{color:#555;}td.elim .pp{color:#666;}
     <div>Skaters: Goal <span>+3</span> · Assist <span>+2</span> · PIM <span>+0.5</span></div>
     <div>Goalies: Win <span>+3</span> · Shutout <span>+3</span></div>
   </div>
-  <div class="sh"><div>#</div><div>Contestant</div><div style="text-align:center">G</div><div style="text-align:center">A</div><div style="text-align:center">PIM</div><div style="text-align:center">W</div><div style="text-align:center">SO</div><div style="text-align:center">Pts</div></div>
+  <div class="sh"><div>#</div><div>Contestant</div><div style="text-align:center">G</div><div style="text-align:center">A</div><div style="text-align:center">PIM</div><div style="text-align:center">W</div><div style="text-align:center">SO</div><div style="text-align:center">Left</div><div style="text-align:center">Pts</div></div>
   <div id="slist"><div class="loading-overlay"><div class="loading-spinner"></div><div class="loading-text">Fetching standings…</div></div></div>
 </div>
 
@@ -341,14 +347,19 @@ function gpp(name){
   return i.type==='goalie'?(p.wins||0)*3+(p.shutouts||0)*3:(p.goals||0)*3+(p.assists||0)*2+(p.pim||0)*.5;
 }
 function gcs(c){
-  let g=0,a=0,pim=0,w=0,so=0,tot=0;
+  let g=0,a=0,pim=0,w=0,so=0,tot=0,remaining=0;
   Object.values(c.picks||{}).forEach(n=>{
     if(!n)return;const ps=gps(n),i=PM[n];if(!i)return;
     if(i.type==='skater'){g+=ps.goals||0;a+=ps.assists||0;pim+=ps.pim||0;}
     if(i.type==='goalie'){w+=ps.wins||0;so+=ps.shutouts||0;}
     tot+=gpp(n);
+    if(!isElim(i.team)) remaining++;
   });
-  return{goals:g,assists:a,pim,wins:w,shutouts:so,total:tot};
+  return{goals:g,assists:a,pim,wins:w,shutouts:so,total:tot,remaining};
+}
+function remPill(n){
+  const cls=n===0?'rem-zero':n<=4?'rem-low':n<=9?'rem-mid':'rem-high';
+  return`<div class="rem"><span class="rem-pill ${cls}">${n}/15</span></div>`;
 }
 function isElim(t){return elimTeams.includes(t);}
 const mob=()=>window.innerWidth<=768;
@@ -369,12 +380,13 @@ function renderStandings(){
         <div class="sr-stat"><div class="sr-stat-label">PIM</div><div class="sr-stat-val">${c.st.pim}</div></div>
         <div class="sr-stat"><div class="sr-stat-label">Wins</div><div class="sr-stat-val blue">${c.st.wins}</div></div>
         <div class="sr-stat"><div class="sr-stat-label">SO</div><div class="sr-stat-val blue">${c.st.shutouts}</div></div>
+        <div class="sr-stat"><div class="sr-stat-label">Left</div><div class="sr-stat-val" style="font-size:15px">${c.st.remaining}/15</div></div>
         <div class="sr-stat"><div class="sr-stat-label">Pts</div><div class="sr-stat-val gold">${c.st.total.toFixed(1)}</div></div>
       </div><div class="pbw"><div class="pb" style="width:${pct}%"></div></div></div>`;
     }).join('');
   }else{
     el.innerHTML=ranked.map((c,i)=>{const r=i+1,bc=r===1?'r1':r===2?'r2':r===3?'r3':'ro',pct=mx>0?Math.round(c.st.total/mx*100):0;
-      return`<div class="sr"><div class="rb ${bc}">${r}</div><div class="cn">${c.name}</div><div class="sc">${c.st.goals}</div><div class="sc">${c.st.assists}</div><div class="sc">${c.st.pim}</div><div class="sc-g">${c.st.wins}</div><div class="sc-g">${c.st.shutouts}</div><div class="tc">${c.st.total.toFixed(1)}</div><div class="pbw"><div class="pb" style="width:${pct}%"></div></div></div>`;
+      return`<div class="sr"><div class="rb ${bc}">${r}</div><div class="cn">${c.name}</div><div class="sc">${c.st.goals}</div><div class="sc">${c.st.assists}</div><div class="sc">${c.st.pim}</div><div class="sc-g">${c.st.wins}</div><div class="sc-g">${c.st.shutouts}</div>${remPill(c.st.remaining)}<div class="tc">${c.st.total.toFixed(1)}</div><div class="pbw"><div class="pb" style="width:${pct}%"></div></div></div>`;
     }).join('');
   }
 }
@@ -411,7 +423,7 @@ window.renderMobPicks=function(){
   const c=CONTESTANTS.find(x=>x.name===cName);if(!c){hdr.style.display='none';list.style.display='none';return;}
   const st=gcs(c);
   hdr.style.display='flex';
-  hdr.innerHTML=`<div><div class="mob-contestant-name">${c.name}</div><div style="font-family:'Barlow Condensed';font-size:13px;color:var(--text-dim);letter-spacing:1px;margin-top:2px;">${st.goals}G · ${st.assists}A · ${st.pim}PIM · ${st.wins}W · ${st.shutouts}SO</div></div><div style="text-align:right;"><div class="mob-contestant-pts">${st.total.toFixed(1)}</div><div class="mob-contestant-pts-label">total pts</div></div>`;
+  hdr.innerHTML=`<div><div class="mob-contestant-name">${c.name}</div><div style="font-family:'Barlow Condensed';font-size:13px;color:var(--text-dim);letter-spacing:1px;margin-top:2px;">${st.goals}G · ${st.assists}A · ${st.pim}PIM · ${st.wins}W · ${st.shutouts}SO · <span style="color:${st.remaining<=4?'#ff7043':st.remaining<=9?'#ffb800':'#4caf50'}">${st.remaining}/15 left</span></div></div><div style="text-align:right;"><div class="mob-contestant-pts">${st.total.toFixed(1)}</div><div class="mob-contestant-pts-label">total pts</div></div>`;
   list.style.display='flex';
   list.innerHTML=GROUPS.map(g=>{
     const pName=(c.picks||{})[g.id];if(!pName)return`<div class="mob-pick-row" style="opacity:.4;"><div class="mob-pick-group">G${g.id}</div><div class="mob-pick-info"><div class="mob-pick-name" style="color:var(--text-dim);font-size:15px;">No pick</div></div><div class="mob-pick-pts" style="color:var(--text-dim);">—</div></div>`;
