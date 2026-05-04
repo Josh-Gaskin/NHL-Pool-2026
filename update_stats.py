@@ -1,8 +1,12 @@
 """
 update_stats.py
 ---------------
-Fetches playoff stats for all 60 pool players directly from the NHL API
-(no CORS restrictions server-side) and writes results to Firebase Firestore.
+Fetches 2025-26 playoff stats for all 60 pool players from the NHL API
+and writes results to Firebase Firestore.
+
+Uses the /v1/player/{id}/landing endpoint which always contains current
+careerTotals including live playoff stats — much more reliable than
+the /game-log/ endpoint which can lag or return empty data early in playoffs.
 
 Run on a schedule via GitHub Actions every 30 minutes.
 """
@@ -12,9 +16,9 @@ import json
 import requests
 import firebase_admin
 from firebase_admin import credentials, firestore
+from datetime import datetime, timezone
 
-# ─── Firebase init ────────────────────────────────────────────────────────────
-# GitHub Actions passes the service account JSON as an environment variable.
+# ── Firebase init ─────────────────────────────────────────────────────────────
 service_account_info = json.loads(os.environ["FIREBASE_SERVICE_ACCOUNT"])
 cred = credentials.Certificate(service_account_info)
 firebase_admin.initialize_app(cred)
@@ -99,124 +103,145 @@ PLAYERS = [
     {"name": "Stuart Skinner", "team": "PIT", "type": "goalie", "id": 8479973, "group": 15},
 ]
 
-SEASON = "20252026"
-HEADERS = {"User-Agent": "NHL-Pool-Tracker/1.0"}
+SEASON_ID = "20252026"
+HEADERS   = {"User-Agent": "NHL-Pool-Tracker/1.0", "Accept": "application/json"}
 
-def fetch_skater_stats(player_id: int) -> dict:
-    """Fetch playoff game log for a skater and sum goals, assists, PIM."""
-    url = f"https://api-web.nhle.com/v1/player/{player_id}/game-log/{SEASON}/3"
+
+def fetch_player_stats(player: dict) -> dict | None:
+    """
+    Use the /v1/player/{id}/landing endpoint.
+    This always contains careerTotals with a 'playoffs' section
+    broken down by season — we find the 20252026 entry.
+    """
+    url = f"https://api-web.nhle.com/v1/player/{player['id']}/landing"
     try:
-        r = requests.get(url, headers=HEADERS, timeout=10)
+        r = requests.get(url, headers=HEADERS, timeout=15)
         r.raise_for_status()
         data = r.json()
-        goals, assists, pim = 0, 0, 0.0
-        for game in data.get("gameLog", []):
-            goals   += game.get("goals", 0)
-            assists += game.get("assists", 0)
-            pim     += game.get("pim", 0)
-        return {"goals": goals, "assists": assists, "pim": pim, "wins": 0, "shutouts": 0}
+
+        # careerTotals has a 'playoffs' list of seasons
+        playoffs = data.get("careerTotals", {}).get("playoffs", {})
+
+        if player["type"] == "skater":
+            # The playoffs section is a single dict (aggregated career)
+            # We need the seasonTotals list instead to find the specific season
+            season_totals = data.get("seasonTotals", [])
+            goals = assists = pim = 0
+            for entry in season_totals:
+                if (str(entry.get("season", "")) == SEASON_ID
+                        and entry.get("gameTypeId") == 3):
+                    goals   = entry.get("goals", 0)
+                    assists = entry.get("assists", 0)
+                    pim     = entry.get("pim", 0)
+                    break
+            return {"goals": goals, "assists": assists, "pim": float(pim),
+                    "wins": 0, "shutouts": 0}
+
+        else:  # goalie
+            season_totals = data.get("seasonTotals", [])
+            wins = shutouts = 0
+            for entry in season_totals:
+                if (str(entry.get("season", "")) == SEASON_ID
+                        and entry.get("gameTypeId") == 3):
+                    wins     = entry.get("wins", 0)
+                    shutouts = entry.get("shutouts", 0)
+                    break
+            return {"goals": 0, "assists": 0, "pim": 0.0,
+                    "wins": wins, "shutouts": shutouts}
+
     except Exception as e:
-        print(f"  ERROR fetching skater {player_id}: {e}")
+        print(f"  ERROR: {e}")
         return None
 
-def fetch_goalie_stats(player_id: int) -> dict:
-    """Fetch playoff game log for a goalie and sum wins and shutouts."""
-    url = f"https://api-web.nhle.com/v1/player/{player_id}/game-log/{SEASON}/3"
-    try:
-        r = requests.get(url, headers=HEADERS, timeout=10)
-        r.raise_for_status()
-        data = r.json()
-        wins, shutouts = 0, 0
-        for game in data.get("gameLog", []):
-            decision = game.get("decision", "")
-            if decision == "W":
-                wins += 1
-            toi = game.get("toi", "0:00")
-            shots_against = game.get("shotsAgainst", 1)
-            goals_against = game.get("goalsAgainst", 0)
-            # A shutout: played meaningful time and allowed 0 goals
-            if goals_against == 0 and shots_against > 0 and decision in ("W", "O", "L"):
-                # Only count as shutout if they played the full game
-                # (toi typically "60:00" or similar for full game)
-                mins = int(toi.split(":")[0]) if ":" in toi else 0
-                if mins >= 55:
-                    shutouts += 1
-        return {"goals": 0, "assists": 0, "pim": 0, "wins": wins, "shutouts": shutouts}
-    except Exception as e:
-        print(f"  ERROR fetching goalie {player_id}: {e}")
-        return None
 
 def fetch_eliminated_teams() -> list:
-    """Read the playoff bracket and return list of eliminated team abbreviations."""
+    """Read the playoff bracket and return eliminated team abbreviations.
+
+    The API returns a flat 'series' list at the top level (no 'rounds' wrapper).
+    Each series has:
+      - losingTeamId: the numeric ID of the eliminated team
+      - topSeedTeam.id / topSeedTeam.abbrev
+      - bottomSeedTeam.id / bottomSeedTeam.abbrev
+      - topSeedWins / bottomSeedWins
+    A series is complete when either topSeedWins >= 4 or bottomSeedWins >= 4.
+    """
     url = "https://api-web.nhle.com/v1/playoff-bracket/2026"
     try:
-        r = requests.get(url, headers=HEADERS, timeout=10)
+        r = requests.get(url, headers=HEADERS, timeout=15)
         r.raise_for_status()
         data = r.json()
         eliminated = set()
-        rounds = data.get("rounds", data.get("bracket", {}).get("rounds", []))
-        for rnd in rounds:
-            for series in rnd.get("series", []):
-                if series.get("loser", {}).get("abbrev"):
-                    eliminated.add(series["loser"]["abbrev"])
-                top_wins = series.get("topSeedWins", series.get("topSeedSeriesWins", 0))
-                bot_wins = series.get("bottomSeedWins", series.get("bottomSeedSeriesWins", 0))
-                if top_wins >= 4 and series.get("bottomSeed", {}).get("abbrev"):
-                    eliminated.add(series["bottomSeed"]["abbrev"])
-                if bot_wins >= 4 and series.get("topSeed", {}).get("abbrev"):
-                    eliminated.add(series["topSeed"]["abbrev"])
+
+        # Flat series list — no rounds wrapper
+        for series in data.get("series", []):
+            top_w   = series.get("topSeedWins", 0)
+            bot_w   = series.get("bottomSeedWins", 0)
+            losing_id = series.get("losingTeamId")
+            top_team  = series.get("topSeedTeam", {})
+            bot_team  = series.get("bottomSeedTeam", {})
+
+            # Method 1: losingTeamId is set when series is complete
+            if losing_id:
+                if top_team.get("id") == losing_id:
+                    eliminated.add(top_team["abbrev"])
+                elif bot_team.get("id") == losing_id:
+                    eliminated.add(bot_team["abbrev"])
+
+            # Method 2: fallback — check win counts directly
+            elif top_w >= 4 and bot_team.get("abbrev"):
+                eliminated.add(bot_team["abbrev"])
+            elif bot_w >= 4 and top_team.get("abbrev"):
+                eliminated.add(top_team["abbrev"])
+
+        print(f"  Eliminated teams: {sorted(eliminated) if eliminated else 'none yet'}")
         return list(eliminated)
     except Exception as e:
-        print(f"  ERROR fetching bracket: {e}")
+        print(f"  Bracket ERROR: {e}")
         return []
 
-def main():
-    from datetime import datetime, timezone
 
-    print(f"=== NHL Pool Stats Update — {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')} ===\n")
+def main():
+    now = datetime.now(timezone.utc)
+    print(f"=== NHL Pool Stats Update — {now.strftime('%Y-%m-%d %H:%M UTC')} ===\n")
 
     # ── Fetch all player stats ────────────────────────────────────────────────
     stats_batch = {}
     for p in PLAYERS:
-        print(f"Fetching {p['name']} ({p['team']}, {p['type']})...")
-        if p["type"] == "skater":
-            result = fetch_skater_stats(p["id"])
-        else:
-            result = fetch_goalie_stats(p["id"])
+        print(f"Fetching {p['name']} ({p['team']}, {p['type']}, id={p['id']})...")
+        result = fetch_player_stats(p)
 
         if result is not None:
             stats_batch[p["name"]] = {
                 **result,
-                "team": p["team"],
-                "type": p["type"],
+                "team":  p["team"],
+                "type":  p["type"],
                 "group": p["group"],
-                "nhId": p["id"],
+                "nhlId": p["id"],
             }
             if p["type"] == "skater":
                 pts = result["goals"]*3 + result["assists"]*2 + result["pim"]*0.5
-                print(f"  G:{result['goals']} A:{result['assists']} PIM:{result['pim']} → {pts:.1f} pool pts")
+                print(f"  G:{result['goals']} A:{result['assists']} "
+                      f"PIM:{result['pim']} → {pts:.1f} pool pts")
             else:
                 pts = result["wins"]*3 + result["shutouts"]*3
-                print(f"  W:{result['wins']} SO:{result['shutouts']} → {pts:.1f} pool pts")
+                print(f"  W:{result['wins']} SO:{result['shutouts']} "
+                      f"→ {pts:.1f} pool pts")
         else:
-            print(f"  Skipped (error)")
+            print(f"  SKIPPED (API error)")
 
     # ── Fetch eliminated teams ────────────────────────────────────────────────
-    print("\nFetching playoff bracket for eliminations...")
+    print("\nFetching playoff bracket...")
     eliminated = fetch_eliminated_teams()
-    print(f"  Eliminated teams: {eliminated if eliminated else 'none yet'}")
 
-    # ── Write to Firestore ────────────────────────────────────────────────────
-    print("\nWriting to Firestore...")
-
-    # Write all player stats as a single document for efficiency
+    # ── Write everything to Firestore as a single document ───────────────────
+    print(f"\nWriting {len(stats_batch)} players to Firestore...")
     db.collection("pool").document("stats").set({
-        "players": stats_batch,
+        "players":        stats_batch,
         "eliminatedTeams": eliminated,
-        "lastUpdated": datetime.now(timezone.utc).isoformat(),
+        "lastUpdated":    now.isoformat(),
     })
+    print(f"\n✅ Done — {len(stats_batch)}/60 players written.")
 
-    print(f"\n✅ Done — {len(stats_batch)} players written to Firestore.")
 
 if __name__ == "__main__":
     main()
