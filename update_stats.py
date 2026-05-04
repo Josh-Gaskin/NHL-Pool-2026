@@ -220,3 +220,15 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+def debug_bracket():
+    import json
+    url = "https://api-web.nhle.com/v1/playoff-bracket/2026"
+    r = requests.get(url, headers=HEADERS, timeout=15)
+    print("Bracket API status:", r.status_code)
+    data = r.json()
+    print("Top-level keys:", list(data.keys()))
+    print("Full response:")
+    print(json.dumps(data, indent=2)[:3000])  # first 3000 chars
+
+debug_bracket()
